@@ -128,31 +128,16 @@
         </div>
 
         <!-- Social Media -->
-<!-- Social Media Sharing -->
-<div class="text-center mt-5">
-    <h4>Share Street Food Explorer</h4>
-    <div class="social-links">
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https://jasontoh9672.github.io/Testing/" 
-           target="_blank" onclick="return shareOnFacebook()">
-           <i class="fab fa-facebook"></i> Share on Facebook
-        </a>
-        
-        <a href="https://twitter.com/intent/tweet?url=https://jasontoh9672.github.io/Testing/&text=Check out this amazing street food website!" 
-           target="_blank" onclick="return shareOnTwitter()">
-           <i class="fab fa-twitter"></i> Tweet This
-        </a>
-        
-        <a href="https://wa.me/?text=Discover amazing street foods: https://jasontoh9672.github.io/Testing/" 
-           target="_blank">
-           <i class="fab fa-whatsapp"></i> Share on WhatsApp
-        </a>
-        
-        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://jasontoh9672.github.io/Testing/" 
-           target="_blank">
-           <i class="fab fa-linkedin"></i> Share on LinkedIn
-        </a>
+        <div class="text-center mt-5">
+            <h4>Follow Us</h4>
+            <div class="social-links">
+                <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
     </div>
-</div>
 
     <!-- Footer -->
     <footer class="footer text-center">
@@ -162,7 +147,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
-        
         $(document).ready(function () {
             // Load saved form data
             const savedData = JSON.parse(localStorage.getItem("contactFormData") || "{}");
@@ -186,39 +170,7 @@
                 alert("Thank you for contacting us, " + $("#name").val() + "! Your message has been saved.");
             });
         });
-                // Social media sharing functions
-        function shareOnFacebook() {
-            window.open(
-                'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href),
-                'facebook-share-dialog',
-                'width=626,height=436'
-            );
-            return false;
-        }
-        
-        function shareOnTwitter() {
-            const text = 'Check out this amazing street food website! ' + window.location.href;
-            window.open(
-                'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text),
-                'twitter-share-dialog',
-                'width=626,height=436'
-            );
-            return false;
-        }
-        
-        // Track social sharing in localStorage
-        $('.social-links a').on('click', function() {
-            const platform = $(this).find('i').attr('class').match(/fa-(\w+)/)[1];
-            let shareHistory = JSON.parse(localStorage.getItem('shareHistory') || '[]');
-            shareHistory.push({
-                platform: platform,
-                timestamp: new Date().toISOString(),
-                page: window.location.href
-            });
-            localStorage.setItem('shareHistory', JSON.stringify(shareHistory));
-        });
     </script>
 </body>
-
 
 </html>
