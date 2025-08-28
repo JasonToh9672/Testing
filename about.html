@@ -68,6 +68,26 @@
             margin: 0 auto;
         }
 
+        /* Page-specific fix: ensure the about hero spans the full viewport on small devices
+           (keeps the rest of the site's styles untouched) */
+        .about-hero {
+            box-sizing: border-box;
+            /* make it full-bleed even if placed inside a constrained container */
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            margin-right: calc(50% - 50vw);
+            left: 0;
+            right: 0;
+        }
+
+        .about-hero .hero-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 15px; /* small horizontal padding for phones */
+            position: relative;
+            z-index: 2;
+        }
+
         /* Story Section */
         .story-section {
             padding: 100px 0;
