@@ -350,24 +350,96 @@
             display: inline-block;
         }
 
-        /* Responsive Design */
+        /* Responsive Design - Fixed for Mobile */
         @media (max-width: 768px) {
             .about-hero h1 {
-                font-size: 2.5rem;
+                font-size: 2.5rem !important;
+            }
+
+            .about-hero p {
+                font-size: 1.1rem !important;
+                padding: 0 15px !important;
             }
 
             .story-content {
-                padding: 30px 20px;
+                padding: 30px 20px !important;
+                margin: 0 15px 30px !important;
             }
 
             .section-title {
-                font-size: 2rem;
+                font-size: 2rem !important;
+                padding: 0 15px !important;
             }
 
             .team-avatar {
-                width: 150px;
-                height: 150px;
-                font-size: 3rem;
+                width: 150px !important;
+                height: 150px !important;
+                font-size: 3rem !important;
+            }
+
+            .mission-card {
+                margin: 0 15px 30px !important;
+                padding: 30px 20px !important;
+            }
+
+            .fact-card {
+                padding: 20px 15px !important;
+            }
+
+            .fact-number {
+                font-size: 2.5rem !important;
+            }
+
+            .container {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+
+            .navbar-brand {
+                font-size: 1.2rem !important;
+            }
+
+            .about-hero {
+                padding: 100px 0 60px !important;
+            }
+
+            .story-section,
+            .mission-section,
+            .team-section {
+                padding: 60px 0 !important;
+            }
+
+            .fun-facts {
+                padding: 60px 0 !important;
+            }
+
+            .fun-facts h2 {
+                font-size: 1.8rem !important;
+                margin-bottom: 2rem !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .about-hero h1 {
+                font-size: 2rem !important;
+            }
+
+            .about-hero p {
+                font-size: 1rem !important;
+            }
+
+            .section-title {
+                font-size: 1.8rem !important;
+            }
+
+            .story-content {
+                padding: 20px 15px !important;
+                margin: 0 10px 20px !important;
+            }
+
+            .mission-card {
+                margin: 0 10px 20px !important;
+                padding: 20px 15px !important;
             }
         }
         @media screen and (max-width: 768px) {
