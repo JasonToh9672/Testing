@@ -8,81 +8,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+
     <style>
-        :root {
-            --primary-color: #ff6b35;
-            --secondary-color: #f7931e;
-            --accent-color: #2ecc71;
-            --dark-color: #2c3e50;
-            --light-color: #ecf0f1;
-        }
-
-                .api-section {
-            padding: 80px 0;
-            background: white;
-            border-top: 1px solid #eee;
-        }
-        
-        .api-loading {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .food-of-day-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .food-of-day-card img {
-            width: 200px;
-            height: 200px;
-            border-radius: 15px;
-            object-fit: cover;
-            margin-bottom: 20px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--dark-color);
-        }
-
-        /* Navigation */
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: white !important;
-        }
-
-        .navbar-nav .nav-link {
-            color: white !important;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            margin: 0 5px;
-            border-radius: 5px;
-            padding: 8px 15px !important;
-        }
-
-        .navbar-nav .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
         /* Hero Section */
         .hero {
             background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23ff6b35" width="1200" height="600"/><circle fill="%23f7931e" cx="200" cy="150" r="80"/><circle fill="%23f7931e" cx="1000" cy="450" r="100"/><rect fill="%23ffffff" opacity="0.1" x="0" y="0" width="1200" height="600"/></svg>');
@@ -159,6 +87,36 @@
             transform: scale(1.05);
         }
 
+        /* Search suggestions styling */
+        .search-suggestions {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f8f9fa !important;
+        }
+
+        .suggestion-item i {
+            color: var(--primary-color);
+        }
+
         /* Popular Foods Section */
         .popular-foods {
             padding: 80px 0;
@@ -201,13 +159,12 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
 
-
         .food-image {
             width: 100%;
             height: 200px;
             position: relative;
             overflow: hidden;
-            background: #f2f2f2; /* optional placeholder bg */
+            background: #f2f2f2;
         }
 
         .food-image img {
@@ -311,7 +268,6 @@
 
         .footer-section h4 {
             margin-bottom: 20px;
-
             color: var(--secondary-color);
         }
 
@@ -433,21 +389,19 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transform: translateX(100%);
             transition: transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
         }
 
         .welcome-message.show {
             transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 </head>
 
 <body>
-    <!-- Facebook SDK -->
-    <div id="fb-root"></div>
-    
-    <!-- Twitter SDK -->
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
@@ -523,20 +477,10 @@
 
     <!-- Popular Foods Section -->
     <section class="popular-foods">
-        <div class="container">
+        <div class="container" id="showresult">
             <h2 class="section-title animate__animated animate__fadeInUp">Popular Street Foods</h2>
             <div class="row" id="popularFoodsContainer">
                 <!-- Popular foods will be loaded here -->
-            </div>
-        </div>
-    </section>
-
-    <section class="api-section">
-        <div class="container">
-            <h2 class="section-title">Food of the Day</h2>
-            <div id="foodOfDayContainer" class="api-loading">
-                <div class="spinner"></div>
-                <p>Loading delicious recommendations...</p>
             </div>
         </div>
     </section>
@@ -586,32 +530,13 @@
                     <h4><i class="fas fa-utensils"></i> Street Food Explorer</h4>
                     <p>Your ultimate guide to discovering the world's most amazing street foods. From local Malaysian
                         favorites to global culinary treasures.</p>
-                        
                     <div class="social-links mt-3">
-                        <!-- Facebook Like Button -->
-                        <div class="fb-like d-inline-block me-3" 
-                             data-href="https://your-website-url.com" 
-                             data-width="" 
-                             data-layout="button_count" 
-                             data-action="like" 
-                             data-size="small" 
-                             data-share="true">
-                        </div>
-                        
-                        <!-- Twitter Follow Button -->
-                        <a href="https://twitter.com/streetfoodmy" 
-                           class="twitter-follow-button me-3" 
-                           data-show-count="true" 
-                           data-size="large">
-                           Follow @StreetFoodMY
-                        </a>
-                        
-                        <!-- Traditional social links -->
-                        <a href="#" title="Instagram" onclick="shareOnInstagram()"><i class="fab fa-instagram"></i></a>
-                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="https://web.facebook.com/StreetFoodExplorer9672/" title="Facebook"><i
+                                class="fab fa-facebook"></i></a>
+                        <a href="https://x.com/Street_Food9672" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/street_food_explorer9672/" title="Instagram"><i
+                                class="fab fa-instagram"></i></a>
                     </div>
-                </div>
-
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
@@ -715,197 +640,963 @@
         const popularFoods = [
             {
                 id: 1,
-                name: "Char Kway Teow",
-                description: "Stir-fried rice noodles with prawns, cockles, Chinese sausage, and bean sprouts. A Malaysian favorite!",
-                rating: 4.8,
+                name: "Nasi Lemak",
+                description: "Fragrant coconut rice served with sambal, fried anchovies, peanuts, cucumber, and boiled egg. Malaysia's beloved national dish.",
+                rating: 4.9,
                 country: "Malaysia",
-                image: "images/char-koay-teow-thumb.jpg",
-                category: "Noodles"
+                image: "images/malaysia/Nasi Lemak.jpg",
+                category: "rice"
             },
             {
                 id: 2,
-                name: "Roti Canai",
-                description: "Flaky flatbread served with curry. Perfect for breakfast or anytime snack.",
-                rating: 4.7,
-                country: "Malaysia",
-                image: "images/RotiCanai-1.jpg",
-                category: "Bread"
+                name: "Char Kway Teow",
+                description: "Stir-fried flat rice noodles with prawns, Chinese sausage, eggs, bean sprouts, and chives in dark soy sauce.",
+                rating: 4.8,
+                country: "Penang",
+                image: "images/malaysia/Char Kway Teow.jpg",
+                category: "noodles"
             },
             {
                 id: 3,
-                name: "Satay",
-                description: "Grilled skewered meat served with peanut sauce and rice cakes.",
-                rating: 4.6,
+                name: "Roti Canai",
+                description: "Flaky and crispy flatbread served with dhal curry or meat curry. Popular breakfast dish in Malaysia.",
+                rating: 4.7,
                 country: "Malaysia",
-                image: "images/main-header.avif",
-                category: "Grilled"
+                image: "images/RotiCanai.jpg",
+                category: "bread"
             },
             {
                 id: 4,
-                name: "Nasi Lemak",
-                description: "Coconut rice with sambal, anchovies, peanuts, and boiled egg. Malaysia's national dish!",
+                name: "Satay",
+                description: "Skewered and grilled meat served with peanut sauce, rice cakes, and cucumber.",
                 rating: 4.9,
-                country: "Malaysia",
-                image: "images/20231116072724-c2-a9andy_cooks_thumbnails_nasi_lemak_01.webp",
-                category: "Rice"
+                country: "Kajang",
+                image: "images/malaysia/Satay.jpg",
+                category: "meat"
             },
             {
                 id: 5,
-                name: "Cendol",
-                description: "Sweet dessert with pandan jelly, coconut milk, and palm sugar syrup.",
-                rating: 4.5,
-                country: "Malaysia",
-                image: "images/images.webp",
-                category: "Dessert"
+                name: "Laksa",
+                description: "Spicy noodle soup with coconut milk or tamarind base, often served with prawns, chicken, or fish.",
+                rating: 4.8,
+                country: "Penang/Sarawak",
+                image: "images/malaysia/laksa.jpg",
+                category: "noodles"
             },
             {
                 id: 6,
-                name: "Laksa",
-                description: "Spicy noodle soup with coconut milk, perfect balance of flavors.",
+                name: "Hainanese Chicken Rice",
+                description: "Steamed or roasted chicken served with fragrant rice cooked in chicken stock, and chili sauce.",
+                rating: 4.7,
+                country: "Hainan/Ipoh",
+                image: "images/malaysia/Hainanese Chicken Rice.jpg",
+                category: "rice"
+            },
+            {
+                id: 7,
+                name: "Mee Goreng Mamak",
+                description: "Spicy fried noodles with tofu, potatoes, eggs, vegetables, and squid.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Mee Goreng Mamak.webp",
+                category: "noodles"
+            },
+            {
+                id: 8,
+                name: "Teh Tarik",
+                description: "Malaysia's national drink. Pulled milk tea with frothy top.",
+                rating: 4.9,
+                country: "Malaysia",
+                image: "images/malaysia/Teh Tarik.jpg",
+                category: "drink"
+            },
+            {
+                id: 9,
+                name: "Cendol",
+                description: "Shaved ice dessert with green rice flour jelly, coconut milk, palm sugar syrup, and red beans.",
+                rating: 4.8,
+                country: "Malaysia",
+                image: "images/malaysia/Cendol.jpg",
+                category: "dessert"
+            },
+            {
+                id: 10,
+                name: "ABC (Ais Kacang)",
+                description: "Shaved ice dessert topped with red beans, sweet corn, grass jelly, syrup, and condensed milk.",
                 rating: 4.7,
                 country: "Malaysia",
-                image: "images/curry-laksa-thumb.jpg",
-                category: "Soup"
+                image: "images/malaysia/ABC.jpg",
+                category: "dessert"
+            },
+            {
+                id: 11,
+                name: "Nasi Kandar",
+                description: "Rice served with various curries and side dishes, originating from Penang.",
+                rating: 4.6,
+                country: "Penang",
+                image: "images/malaysia/Nasi Kandar.jpg",
+                category: "rice"
+            },
+            {
+                id: 12,
+                name: "Banana Leaf Rice",
+                description: "South Indian-inspired dish of rice served on a banana leaf with vegetables, curries, and papadum.",
+                rating: 4.7,
+                country: "Malaysia",
+                image: "images/malaysia/Banana Leaf Rice.jpg",
+                category: "rice"
+            },
+            {
+                id: 13,
+                name: "Kaya Toast",
+                description: "Toasted bread with coconut egg jam (kaya) and butter, served with half-boiled eggs.",
+                rating: 4.5,
+                country: "Malaysia/Singapore",
+                image: "images/malaysia/Kaya Toast.jpg",
+                category: "snack"
+            },
+            {
+                id: 14,
+                name: "Rendang",
+                description: "Slow-cooked dry curry dish made with beef, coconut milk, and spices.",
+                rating: 4.9,
+                country: "Minangkabau/Malaysia",
+                image: "images/malaysia/Rendang.jpg",
+                category: "meat"
+            },
+            {
+                id: 15,
+                name: "Kuih Lapis",
+                description: "Colorful layered steamed rice flour and coconut milk cake.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Lapis.jpg",
+                category: "dessert"
+            },
+            {
+                id: 16,
+                name: "Otak-Otak",
+                description: "Grilled fish cake made of ground fish meat mixed with spices and wrapped in banana leaves.",
+                rating: 4.5,
+                country: "Muar, Johor",
+                image: "images/malaysia/Otak otak.jpg",
+                category: "seafood"
+            },
+            {
+                id: 17,
+                name: "Ikan Bakar",
+                description: "Grilled fish marinated with spices and served with sambal.",
+                rating: 4.7,
+                country: "Malaysia",
+                image: "images/malaysia/Ikan Bakar.jpg",
+                category: "seafood"
+            },
+            {
+                id: 18,
+                name: "Keropok Lekor",
+                description: "Traditional fish crackers from Terengganu, deep-fried and crispy.",
+                rating: 4.6,
+                country: "Terengganu",
+                image: "images/malaysia/Keropok Lekor.jpg",
+                category: "snack"
+            },
+            {
+                id: 19,
+                name: "Mee Rebus",
+                description: "Yellow noodles served in a thick, spicy-sweet gravy made of potatoes, curry, and shrimp paste.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Mee Rebus.jpg",
+                category: "noodles"
+            },
+            {
+                id: 20,
+                name: "Nasi Dagang",
+                description: "Fragrant rice steamed in coconut milk, served with fish curry and pickles.",
+                rating: 4.7,
+                country: "Terengganu/Kelantan",
+                image: "images/malaysia/Nasi Dagang.jpg",
+                category: "rice"
+            },
+            {
+                id: 21,
+                name: "Pulut Panggang",
+                description: "Glutinous rice grilled in banana leaf, often filled with spicy coconut.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Pulut Panggang.jpg",
+                category: "snack"
+            },
+            {
+                id: 22,
+                name: "Char Siew Rice",
+                description: "Rice served with barbecued pork (char siew), cucumber, and sweet soy sauce.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Char Siew Rice.jpg",
+                category: "rice"
+            },
+            {
+                id: 23,
+                name: "Hokkien Mee",
+                description: "Dark soy sauce fried noodles with pork lard, prawns, and cabbage.",
+                rating: 4.5,
+                country: "Kuala Lumpur",
+                image: "images/malaysia/Hokkien Mee.jpg",
+                category: "noodles"
+            },
+            {
+                id: 24,
+                name: "Claypot Rice",
+                description: "Rice cooked in claypot with Chinese sausage, chicken, and salted fish.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Claypot Rice.jpg",
+                category: "rice"
+            },
+            {
+                id: 25,
+                name: "Roti Jala",
+                description: "Net-like crepe served with chicken or beef curry.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Roti Jala.jpg",
+                category: "bread"
+            },
+            {
+                id: 26,
+                name: "Rojak",
+                description: "Fruit and vegetable salad mixed with a thick, spicy peanut and shrimp paste sauce.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Rojak.jpg",
+                category: "snacks"
+            },
+            {
+                id: 27,
+                name: "Kuih Seri Muka",
+                description: "Two-layered dessert with glutinous rice bottom and pandan custard top.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Seri Muka.jpg",
+                category: "dessert"
+            },
+            {
+                id: 28,
+                name: "Apam Balik",
+                description: "Thick or thin pancake filled with peanuts, corn, and sugar.",
+                rating: 4.7,
+                country: "Malaysia",
+                image: "images/malaysia/Apam Balik.jpg",
+                category: "dessert"
+            },
+            {
+                id: 29,
+                name: "Murtabak",
+                description: "Stuffed pan-fried bread with minced meat, onions, and egg.",
+                rating: 4.7,
+                country: "Malaysia",
+                image: "images/malaysia/Murtabak.jpg",
+                category: "bread"
+            },
+            {
+                id: 30,
+                name: "Nasi Kerabu",
+                description: "Blue-colored rice served with fried fish or chicken, salted egg, and local herbs.",
+                rating: 4.8,
+                country: "Kelantan",
+                image: "images/malaysia/Nasi Kerabu.jpg",
+                category: "rice"
+            },
+            {
+                id: 31,
+                name: "Nasi Ulam",
+                description: "Herbed rice salad mixed with local spices, herbs, and dried fish.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Nasi Ulam.jpg",
+                category: "rice"
+            },
+            {
+                id: 32,
+                name: "Pisang Goreng",
+                description: "Deep-fried banana fritters, crispy on the outside and soft inside.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Pisang Goreng.jpg",
+                category: "snack"
+            },
+            {
+                id: 33,
+                name: "Mee Siam",
+                description: "Rice vermicelli noodles served with spicy, tangy gravy.",
+                rating: 4.5,
+                country: "Malaysia/Singapore",
+                image: "images/malaysia/mee siam.avif",
+                category: "noodles"
+            },
+            {
+                id: 34,
+                name: "Roti Tisu",
+                description: "Extra thin, crispy flatbread shaped like a tall cone, often drizzled with sugar and condensed milk.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Roti Tisu.jpg",
+                category: "bread"
+            },
+            {
+                id: 35,
+                name: "Kuih Ketayap",
+                description: "Green crepe filled with grated coconut sweetened with palm sugar.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Ketayap.jpeg",
+                category: "dessert"
+            },
+            {
+                id: 36,
+                name: "Soto Ayam",
+                description: "Spiced chicken soup with rice cakes, vermicelli, and bean sprouts.",
+                rating: 4.6,
+                country: "Malaysia/Indonesia",
+                image: "images/malaysia/Soto Ayam.jpg",
+                category: "soup"
+            },
+            {
+                id: 37,
+                name: "Kuih Bahulu",
+                description: "Small sponge cakes baked in traditional molds, usually served during festive seasons.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Bahulu.jpeg",
+                category: "dessert"
+            },
+            {
+                id: 38,
+                name: "Maggi Goreng",
+                description: "Instant noodles stir-fried with egg, vegetables, and sometimes meat or seafood.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Maggi Goreng.jpg",
+                category: "noodles"
+            },
+            {
+                id: 39,
+                name: "Kuih Karipap",
+                description: "Deep-fried pastry filled with curried potatoes, chicken, or sardines.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Karipap.jpg",
+                category: "snack"
+            },
+            {
+                id: 40,
+                name: "Lemang",
+                description: "Glutinous rice cooked in bamboo with coconut milk, traditionally eaten during Hari Raya.",
+                rating: 4.7,
+                country: "Malaysia",
+                image: "images/malaysia/Lemang.png",
+                category: "rice"
+            },
+            {
+                id: 41,
+                name: "Mee Bandung",
+                description: "Noodles in a rich tomato-based gravy with beef, prawns, and egg.",
+                rating: 4.5,
+                country: "Muar, Johor",
+                image: "images/malaysia/Mee Bandung.jpg",
+                category: "noodles"
+            },
+            {
+                id: 42,
+                name: "Kuih Dodol",
+                description: "Sticky toffee-like sweet made of coconut milk, palm sugar, and glutinous rice flour.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Dodol.jpg",
+                category: "dessert"
+            },
+            {
+                id: 43,
+                name: "Mee Kolok",
+                description: "Dry-tossed noodles with soy sauce, shallot oil, and beef or chicken.",
+                rating: 4.7,
+                country: "Sarawak",
+                image: "images/malaysia/Mee Kolok.jpg",
+                category: "noodles"
+            },
+            {
+                id: 44,
+                name: "Nasi Lemuni",
+                description: "Rice cooked with lemuni leaves, believed to have health benefits, served with side dishes.",
+                rating: 4.4,
+                country: "Kedah",
+                image: "images/malaysia/Nasi Lemuni.jpg",
+                category: "rice"
+            },
+            {
+                id: 45,
+                name: "Lontong",
+                description: "Compressed rice cakes in coconut milk-based vegetable stew.",
+                rating: 4.5,
+                country: "Malaysia/Indonesia",
+                image: "images/malaysia/Lontong.jpg",
+                category: "rice"
+            },
+            {
+                id: 46,
+                name: "Popiah",
+                description: "Fresh spring rolls filled with jicama, carrots, lettuce, and sometimes egg or prawns.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Popiah.jpg",
+                category: "snack"
+            },
+            {
+                id: 47,
+                name: "Nasi Tumpang",
+                description: "Cone-shaped rice wrapped in banana leaf with layers of dishes such as curry, fried egg, and serunding.",
+                rating: 4.5,
+                country: "Kelantan",
+                image: "images/malaysia/Nasi Tumpang.jpg",
+                category: "rice"
+            },
+            {
+                id: 48,
+                name: "Kuih Onde-Onde",
+                description: "Soft, chewy dough balls filled with sweet Gula Melaka (palm sugar) and infused with the fragrant flavor of pandan.",
+                rating: 4.7,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Onde Onde.jpg",
+                category: "dessert"
+            },
+            {
+                id: 49,
+                name: "Sup Kambing",
+                description: "Spiced mutton soup cooked with herbs, potatoes, and carrots.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Sup Kambing.jpg",
+                category: "soup"
+            },
+            {
+                id: 50,
+                name: "Mee Soto",
+                description: "Noodles in a flavorful spiced chicken broth, served with shredded chicken and bean sprouts.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Mee Soto.jpg",
+                category: "noodles"
+            },
+            {
+                id: 51,
+                name: "Ayam Percik",
+                description: "Grilled chicken marinated in spiced coconut sauce, popular during Ramadan bazaars.",
+                rating: 4.7,
+                country: "Kelantan",
+                image: "images/malaysia/Ayam Percik.jpg",
+                category: "meat"
+            },
+            {
+                id: 52,
+                name: "Kuih Tepung Pelita",
+                description: "Two-layer coconut milk dessert steamed in banana leaf containers.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Tepung Pelita.jpg",
+                category: "dessert"
+            },
+            {
+                id: 53,
+                name: "Mee Kari",
+                description: "Curry noodles served with chicken, tofu puffs, cockles, and bean sprouts.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Mee Kari.jpeg",
+                category: "noodles"
+            },
+            {
+                id: 54,
+                name: "Pulut Inti",
+                description: "Glutinous rice topped with sweetened grated coconut wrapped in banana leaf.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Pulut Inti.jpg",
+                category: "snack"
+            },
+            {
+                id: 55,
+                name: "Kaya Puff",
+                description: "Flaky pastry filled with coconut egg jam (kaya).",
+                rating: 4.4,
+                country: "Malaysia",
+                image: "images/malaysia/Kaya Puff.jpg",
+                category: "dessert"
+            },
+            {
+                id: 56,
+                name: "Mee Jawa",
+                description: "Yellow noodles served with sweet-spicy gravy, potatoes, bean sprouts, and fried shallots.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Mee Jawa.jpg",
+                category: "noodles"
+            },
+            {
+                id: 57,
+                name: "Pulut Durian",
+                description: "Glutinous rice served with fresh durian and coconut milk.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Pulut Durian.jpg",
+                category: "dessert"
+            },
+            {
+                id: 58,
+                name: "Nasi Ayam Penyet",
+                description: "Indonesian-style smashed fried chicken served with sambal and rice.",
+                rating: 4.6,
+                country: "Malaysia/Indonesia",
+                image: "images/malaysia/Nasi Ayam Penyet.jpeg",
+                category: "rice"
+            },
+            {
+                id: 59,
+                name: "Kuih Cucur Badak",
+                description: "Deep-fried sweet potato dough filled with spicy coconut filling.",
+                rating: 4.4,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Cucur Badak.jpg",
+                category: "snack"
+            },
+            {
+                id: 60,
+                name: "Asam Pedas",
+                description: "Spicy and sour fish stew with tamarind, chili, and spices.",
+                rating: 4.7,
+                country: "Melaka/Johor",
+                image: "images/malaysia/Asam Pedas.jpg",
+                category: "seafood"
+            },
+            {
+                id: 61,
+                name: "Kuih Keria",
+                description: "Sweet potato doughnuts glazed with palm sugar syrup.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Kuih Keria.jpg",
+                category: "dessert"
+            },
+            {
+                id: 62,
+                name: "Putu Mayam",
+                description: "Rice flour noodles served with grated coconut and brown sugar.",
+                rating: 4.5,
+                country: "Malaysia",
+                image: "images/malaysia/Putu Mayam.jpg",
+                category: "dessert"
+            },
+            {
+                id: 63,
+                name: "Roti John",
+                description: "Omelette sandwich with minced meat, onions, and sauces.",
+                rating: 4.6,
+                country: "Malaysia",
+                image: "images/malaysia/Roti John.webp",
+                category: "bread"
+            },
+            {
+                id: 64,
+                name: "Keropok Lekor",
+                description: "Traditional fish crackers from Terengganu, deep-fried and crispy.",
+                rating: 4.6,
+                country: "Terengganu",
+                image: "images/malaysia/Keropok Lekor.jpg",
+                category: "snack"
+            },
+            {
+                id: 65,
+                name: "Bak Kut Teh",
+                description: "A fragrant herbal soup made with pork ribs, garlic, and Chinese herbs, served with rice or fried dough sticks.",
+                rating: 4.7,
+                country: "Klang",
+                image: "images/malaysia/Bak Kut Teh.jpg",
+                category: "Rice dishes"
+            },
+            {
+                id: 66,
+                name: "Milo Dinosaur",
+                description: "Iced Milo topped with a generous heap of undissolved Milo powder, creating a rich and chocolatey treat.",
+                rating: 4.8,
+                country: "Malaysia",
+                image: "images/malaysia/Milo Dinosaur.jpg",
+                category: "Drinks"
+            },
+            {
+                id: 101,
+                name: "Takoyaki",
+                description: "Crispy-outside, gooey-inside octopus balls drizzled with sauce and bonito flakes.",
+                rating: 4.7,
+                country: "Japan",
+                image: "images/Takoyaki.webp",
+                category: "Snacks"
+            },
+            {
+                id: 102,
+                name: "Ramen",
+                description: "Wheat noodles in rich broth topped with chashu, egg, and scallions.",
+                rating: 4.8,
+                country: "Japan",
+                image: "images/Ramen_Bowl.webp",
+                category: "Noodles"
+            },
+            {
+                id: 103,
+                name: "Matcha Ice Cream",
+                description: "Creamy ice cream flavored with Japanese matcha green tea.",
+                rating: 4.3,
+                country: "Japan",
+                image: "images/matcha_ice.jpg",
+                category: "Desserts"
+            },
+            {
+                id: 104,
+                name: "Dango",
+                description: "Skewered rice dumplings, often served with sweet sauces or coatings.",
+                rating: 4.5,
+                country: "Japan",
+                image: "images/dango.jpg",
+                category: "Desserts"
+            },
+            {
+                id: 201,
+                name: "Pad Thai",
+                description: "Stir-fried rice noodles with tamarind, shrimp, tofu, egg, and peanuts.",
+                rating: 4.7,
+                country: "Thailand",
+                image: "images/Pad_Thai.jpg",
+                category: "Noodles"
+            },
+            {
+                id: 202,
+                name: "Mango Sticky Rice",
+                description: "Sweet sticky rice with ripe mango and coconut cream.",
+                rating: 4.6,
+                country: "Thailand",
+                image: "images/mango_rice.webp",
+                category: "Desserts"
+            },
+            {
+                id: 203,
+                name: "Thai Iced Tea",
+                description: "Sweet and creamy iced tea made with strong brewed black tea, sugar, and condensed milk.",
+                rating: 4.5,
+                country: "Thailand",
+                image: "images/thai_tea.jpg",
+                category: "Drinks"
+            },
+            {
+                id: 204,
+                name: "Thai Green Curry Rice",
+                description: "Spicy and aromatic green curry served with steamed rice.",
+                rating: 4.8,
+                country: "Thailand",
+                image: "images/green_curry.jpg",
+                category: "Rice"
+            },
+            {
+                id: 301,
+                name: "Tacos al Pastor",
+                description: "Marinated pork shaved from a spit, served on corn tortillas with pineapple.",
+                rating: 4.8,
+                country: "Mexico",
+                image: "images/tacos.webp",
+                category: "Snacks"
+            },
+            {
+                id: 302,
+                name: "Elote",
+                description: "Grilled corn slathered with mayo, cheese, chili, and lime.",
+                rating: 4.5,
+                country: "Mexico",
+                image: "images/elote.jpg",
+                category: "Snacks"
+            },
+            {
+                id: 303,
+                name: "Margarita",
+                description: "Classic tequila-based cocktail mixed with lime juice and orange liqueur, served with a salted rim.",
+                rating: 4.4,
+                country: "Mexico",
+                image: "images/margarita.webp",
+                category: "Drinks"
+            },
+            {
+                id: 304,
+                name: "Churros",
+                description: "Fried dough pastry coated in sugar, often served with chocolate or caramel dipping sauce.",
+                rating: 4.6,
+                country: "Mexico",
+                image: "images/churros.jpg",
+                category: "Desserts"
+            },
+            {
+                id: 401,
+                name: "Döner Kebab",
+                description: "Thinly sliced seasoned meat in flatbread with veggies and sauce.",
+                rating: 4.6,
+                country: "Turkey",
+                image: "images/Doner_kebab.jpg",
+                category: "Snacks"
+            },
+            {
+                id: 402,
+                name: "Kumpir",
+                description: "Loaded baked potato with butter, cheese, and endless toppings.",
+                rating: 4.4,
+                country: "Turkey",
+                image: "images/kumpir.webp",
+                category: "Snacks"
+            },
+            {
+                id: 403,
+                name: "Künefe",
+                description: "Warm dessert made with shredded phyllo dough and melted cheese, soaked in sweet sugar syrup.",
+                rating: 4.5,
+                country: "Turkey",
+                image: "images/kunefe.jpg",
+                category: "Desserts"
+            },
+            {
+                id: 404,
+                name: "Çay",
+                description: "Strong black tea traditionally brewed in a double teapot, served hot in small tulip-shaped glasses.",
+                rating: 4.3,
+                country: "Turkey",
+                image: "images/cay.jpg",
+                category: "Drinks"
+            },
+            {
+                id: 501,
+                name: "Pani Puri",
+                description: "Crispy puri shells filled with spiced potatoes and tangy tamarind water.",
+                rating: 4.7,
+                country: "India",
+                image: "images/pani_puri.jpg",
+                category: "Snacks"
+            },
+            {
+                id: 502,
+                name: "Masala Dosa",
+                description: "Crisp rice-lentil crepe filled with spiced potatoes; served with chutneys.",
+                rating: 4.6,
+                country: "India",
+                image: "images/masala.jpg",
+                category: "Rice"
+            },
+            {
+                id: 503,
+                name: "Masala Chai",
+                description: "Spiced tea brewed with black tea, milk, sugar, and a blend of aromatic spices.",
+                rating: 4.6,
+                country: "India",
+                image: "images/masala_chai.jpg",
+                category: "Drinks"
+            },
+            {
+                id: 504,
+                name: "Lassi",
+                description: "Refreshing yogurt-based drink, can be sweet or salty, often flavored with fruits or spices.",
+                rating: 4.6,
+                country: "India",
+                image: "images/lassi.jpg",
+                category: "Drinks"
+            },
+            {
+                id: 601,
+                name: "Bánh Mì",
+                description: "Crispy baguette with pickles, herbs, pâté, and meats.",
+                rating: 4.7,
+                country: "Vietnam",
+                image: "images/banh_mi.jpg",
+                category: "Snacks"
+            },
+            {
+                id: 602,
+                name: "Phở",
+                description: "Aromatic beef or chicken noodle soup with fresh herbs.",
+                rating: 4.6,
+                country: "Vietnam",
+                image: "images/pho.jpg",
+                category: "Noodles"
+            },
+            {
+                id: 603,
+                name: "Cà Phê Trứng",
+                description: "Rich Vietnamese coffee topped with a creamy, sweet egg yolk foam.",
+                rating: 4.6,
+                country: "Vietnam",
+                image: "images/caphe.jpg",
+                category: "Drinks"
+            },
+            {
+                id: 604,
+                name: "Chè Sương Sa Hạt Lựu",
+                description: "Sweet Vietnamese dessert made with agar jelly, water chestnuts, and tapioca pearls in coconut milk.",
+                rating: 4.6,
+                country: "Vietnam",
+                image: "images/chesuong.jpg",
+                category: "Desserts"
+            },
+            {
+                id: 701,
+                name: "Tteokbokki",
+                description: "Chewy rice cakes simmered in spicy gochujang sauce.",
+                rating: 4.5,
+                country: "South Korea",
+                image: "images/tteobokki.jpg",
+                category: "Snacks"
+            },
+            {
+                id: 702,
+                name: "Hotteok",
+                description: "Brown sugar–filled griddled pancakes, crisp outside, gooey inside.",
+                rating: 4.4,
+                country: "South Korea",
+                image: "images/hotteok.jpg",
+                category: "Desserts"
+            },
+            {
+                id: 703,
+                name: "Kimchi Fried Rice",
+                description: "Flavorful fried rice dish stir-fried with kimchi, vegetables, and sometimes meat or egg.",
+                rating: 4.5,
+                country: "South Korea",
+                image: "images/kimchi_rice.jpg",
+                category: "Rice"
+            },
+            {
+                id: 704,
+                name: "Banana Milk",
+                description: "Sweet, creamy milk flavored with banana, typically sold in bottles or cartons.",
+                rating: 4.7,
+                country: "South Korea",
+                image: "images/banana_milk.jpg",
+                category: "Drinks"
+            },
+            {
+                id: 801,
+                name: "Nasi Goreng",
+                description: "Smoky fried rice with kecap manis and toppings.",
+                rating: 4.6,
+                country: "Indonesia",
+                image: "images/nasi_goreng.jpg",
+                category: "Rice"
+            },
+            {
+                id: 802,
+                name: "Satay",
+                description: "Skewered grilled meats with peanut sauce, Indonesian style.",
+                rating: 4.6,
+                country: "Indonesia",
+                image: "images/satay.jpg",
+                category: "Snacks"
+            },
+            {
+                id: 803,
+                name: "Kopi Luwak",
+                description: "Rare and expensive coffee made from beans digested and excreted by civet cats, known for its smooth flavor.",
+                rating: 4.6,
+                country: "Indonesia",
+                image: "images/kopi_luwak.jpg",
+                category: "Drinks"
+            },
+            {
+                id: 804,
+                name: "Dadar Gulung",
+                description: "Green pandan-flavored crepe roll filled with sweet coconut and palm sugar.",
+                rating: 4.6,
+                country: "Indonesia",
+                image: "images/dadar_gulung.jpg",
+                category: "Desserts"
+            },
+            {
+                id: 901,
+                name: "Jianbing",
+                description: "Crispy egg crêpe with sauces, herbs, and crunchy cracker.",
+                rating: 4.4,
+                country: "China",
+                image: "images/jianbing.jpg",
+                category: "Snacks"
+            },
+            {
+                id: 902,
+                name: "Xiao Long Bao",
+                description: "Soup dumplings bursting with savory broth.",
+                rating: 4.5,
+                country: "China",
+                image: "images/xiaolongbao.jpg",
+                category: "Snacks"
+            },
+            {
+                id: 903,
+                name: "Peking Duck",
+                description: "Crispy duck skin and rich flavor, traditionally enjoyed with thin pancakes and condiments.",
+                rating: 4.8,
+                country: "China",
+                image: "images/peking_duck.jpg",
+                category: "Snacks"
+            },
+            {
+                id: 904,
+                name: "Zha Jiang Mian",
+                description: "Noodles topped with thick sauce made of fermented soybean paste and minced pork.",
+                rating: 4.6,
+                country: "China",
+                image: "images/zhajiangmian.webp",
+                category: "Noodles"
+            },
+            {
+                id: 1001,
+                name: "Chilli Crab",
+                description: "Sweet–spicy crab in rich tomato-chili sauce; messy and glorious.",
+                rating: 4.6,
+                country: "Singapore",
+                image: "images/chilli_crab.avif",
+                category: "Snacks"
+            },
+            {
+                id: 1002,
+                name: "Hainanese Chicken Rice",
+                description: "Poached chicken with fragrant rice and chili-ginger sauce.",
+                rating: 4.7,
+                country: "Singapore",
+                image: "images/hainan_chicken.jpg",
+                category: "Rice"
+            },
+            {
+                id: 1003,
+                name: "Xing Zhou Bee Hoon",
+                description: "Stir-fried rice vermicelli with curry powder, vegetables, shrimp, and sometimes char siu or egg.",
+                rating: 4.6,
+                country: "Singapore",
+                image: "images/xingzhou.jpg",
+                category: "Noodles"
+            },
+            {
+                id: 1004,
+                name: "Mee Siam",
+                description: "Thin rice noodles in a tangy, spicy, and slightly sweet gravy, often served with tofu, egg, and shrimp.",
+                rating: 4.5,
+                country: "Singapore",
+                image: "images/meesiam.avif",
+                category: "Noodles"
             }
+
         ];
-
-                async function fetchFoodRecommendations() {
-            try {
-                // Using TheMealDB API (free, no API key required)
-                const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
-                const data = await response.json();
-                return data.meals ? data.meals[0] : null;
-            } catch (error) {
-                console.error('API Error:', error);
-                return null;
-            }
-        }
-
-        // jQuery AJAX implementation for assignment requirement
-        function loadFoodOfTheDay() {
-            $('#foodOfDayContainer').html(`
-                <div class="api-loading">
-                    <div class="spinner"></div>
-                    <p>Loading today's featured dish...</p>
-                </div>
-            `);
-
-            $.ajax({
-                url: 'https://www.themealdb.com/api/json/v1/1/random.php',
-                method: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    if (data.meals && data.meals[0]) {
-                        const meal = data.meals[0];
-                        showFoodOfTheDay(meal);
-                        
-                        // Store API data in sessionStorage for demo
-                        const apiData = {
-                            meal: meal,
-                            timestamp: new Date().toISOString()
-                        };
-                        sessionStorage.setItem('todaysFeaturedFood', JSON.stringify(apiData));
-                        
-                        console.log('✅ API call successful - Food of the day loaded');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log('⚠️ API call failed - using fallback data');
-                    showFallbackFood();
-                },
-                timeout: 5000
-            });
-        }
-
-        function showFoodOfTheDay(meal) {
-            const container = $('#foodOfDayContainer');
-            const foodCard = `
-                <div class="food-of-day-card animate__animated animate__fadeInUp">
-                    <img src="${meal.strMealThumb}" alt="${meal.strMeal}" loading="lazy">
-                    <h4>${meal.strMeal}</h4>
-                    <p class="text-muted">Category: ${meal.strCategory} | Origin: ${meal.strArea}</p>
-                    <p>${meal.strInstructions.substring(0, 200)}...</p>
-                    <div class="mt-3">
-                        <button class="btn btn-custom me-2" onclick="addToFavorites('${meal.idMeal}', '${meal.strMeal}')">
-                            <i class="fas fa-heart"></i> Add to Favorites
-                        </button>
-                        <button class="btn btn-outline-primary" onclick="shareFood('${meal.strMeal}', '${meal.strMealThumb}')">
-                            <i class="fas fa-share"></i> Share
-                        </button>
-                    </div>
-                </div>
-            `;
-            container.html(foodCard);
-        }
-
-        function showFallbackFood() {
-            const container = $('#foodOfDayContainer');
-            const fallbackCard = `
-                <div class="food-of-day-card">
-                    <img src="images/nasi-lemak-placeholder.jpg" alt="Nasi Lemak" loading="lazy">
-                    <h4>Nasi Lemak</h4>
-                    <p class="text-muted">Category: Malaysian Cuisine | Origin: Malaysia</p>
-                    <p>Malaysia's national dish featuring coconut rice, sambal, anchovies, and boiled egg. A perfect harmony of flavors!</p>
-                    <div class="mt-3">
-                        <button class="btn btn-custom" onclick="alert('Demo: Added to favorites!')">
-                            <i class="fas fa-heart"></i> Add to Favorites
-                        </button>
-                    </div>
-                </div>
-            `;
-            <p class="text-muted">*Sample data - API unavailable</p>
-            container.html(fallbackCard);
-        }
-
-        // Enhanced storage functions with better error handling
-        function safeLocalStorageSet(key, value) {
-            try {
-                localStorage.setItem(key, JSON.stringify(value));
-                return true;
-            } catch (error) {
-                console.error('LocalStorage error:', error);
-                return false;
-            }
-        }
-
-        function safeLocalStorageGet(key) {
-            try {
-                const item = localStorage.getItem(key);
-                return item ? JSON.parse(item) : null;
-            } catch (error) {
-                console.error('LocalStorage read error:', error);
-                return null;
-            }
-        }
-
-        // Enhanced social media sharing functions
-        function shareFood(foodName, imageUrl) {
-            const shareData = {
-                title: `Check out ${foodName}!`,
-                text: `Discovered this amazing dish on Street Food Explorer: ${foodName}`,
-                url: window.location.href
-            };
-
-            if (navigator.share) {
-                navigator.share(shareData);
-            } else {
-                // Fallback for browsers without native sharing
-                shareOnFacebook(window.location.href, shareData.title);
-            }
-        }
-
-        function shareOnInstagram() {
-            // Instagram doesn't have a direct web sharing API
-            // So we copy a share message to clipboard
-            const shareText = "Discover amazing street foods at Street Food Explorer! 🍜 #streetfood #malaysianfood";
-            navigator.clipboard.writeText(shareText).then(() => {
-                alert('Share text copied to clipboard! You can now paste it on Instagram.');
-            });
-        }
 
         // Initialize the website
         $(document).ready(function () {
-            // Keep all your existing initialization code...
             initializeStorage();
             loadPopularFoods();
             showWelcomeMessage();
@@ -914,49 +1605,15 @@
             setupAnimations();
             loadUserPreferences();
 
-            // 📍 ADD these new calls
-            loadFoodOfTheDay(); // Load API content
-            
-            // Initialize social media widgets after page load
-            setTimeout(() => {
-                if (typeof twttr !== 'undefined') {
-                    twttr.widgets.load();
-                }
-            }, 2000);
-
             console.log('Street Food Explorer initialized successfully!');
-            console.log('🌐 API integration active');
-            console.log('📱 Social media plugins loaded');
         });
-
-                function toggleFavorite(foodId) {
-            const index = favoritesList.indexOf(foodId);
-
-            if (index > -1) {
-                favoritesList.splice(index, 1);
-                showNotification('Removed from favorites', 'info');
-            } else {
-                favoritesList.push(foodId);
-                showNotification('Added to favorites!', 'success');
-            }
-
-            // Enhanced localStorage with error handling
-            if (!safeLocalStorageSet('streetFood_favorites', favoritesList)) {
-                showNotification('Unable to save favorites. Please check your browser settings.', 'warning');
-            }
-
-            loadPopularFoods();
-            console.log('Favorites updated:', favoritesList);
-        }
 
         // Storage Management Functions
         function initializeStorage() {
-            // Initialize localStorage for favorites
             if (!localStorage.getItem('streetFood_favorites')) {
                 localStorage.setItem('streetFood_favorites', JSON.stringify([]));
             }
 
-            // Initialize localStorage for user preferences
             if (!localStorage.getItem('streetFood_preferences')) {
                 const defaultPrefs = {
                     theme: 'light',
@@ -967,7 +1624,6 @@
                 localStorage.setItem('streetFood_preferences', JSON.stringify(defaultPrefs));
             }
 
-            // Initialize sessionStorage for current session
             if (!sessionStorage.getItem('streetFood_session')) {
                 const sessionData = {
                     startTime: new Date().toISOString(),
@@ -977,9 +1633,7 @@
                 sessionStorage.setItem('streetFood_session', JSON.stringify(sessionData));
             }
 
-            // Load favorites from localStorage
             favoritesList = JSON.parse(localStorage.getItem('streetFood_favorites'));
-
             console.log('Storage initialized successfully');
         }
 
@@ -1004,7 +1658,6 @@
             visitCount = parseInt(getCookie('streetFood_visits') || '0') + 1;
             setCookie('streetFood_visits', visitCount, 30);
 
-            // Update session data
             const sessionData = JSON.parse(sessionStorage.getItem('streetFood_session'));
             sessionData.pageViews.push({
                 page: 'home',
@@ -1034,16 +1687,14 @@
             document.getElementById('welcomeMessage').classList.remove('show');
         }
 
-        // Search functionality
+        //Search functionality
         function performSearch() {
             const searchInput = document.getElementById('searchInput');
             const searchTerm = searchInput.value.trim();
 
             if (searchTerm) {
-                // Save search to localStorage
                 localStorage.setItem('streetFood_lastSearch', searchTerm);
 
-                // Update session search history
                 const sessionData = JSON.parse(sessionStorage.getItem('streetFood_session'));
                 sessionData.searchHistory.push({
                     term: searchTerm,
@@ -1051,29 +1702,30 @@
                 });
                 sessionStorage.setItem('streetFood_session', JSON.stringify(sessionData));
 
-                // Simulate search results
                 showSearchResults(searchTerm);
-
                 console.log(`Search performed: ${searchTerm}`);
             }
         }
 
         function showSearchResults(searchTerm) {
-            // Filter popular foods based on search term
             const results = popularFoods.filter(food =>
                 food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 food.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                food.category.toLowerCase().includes(searchTerm.toLowerCase())
+                food.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                food.country.toLowerCase().includes(searchTerm.toLowerCase())
             );
 
             if (results.length > 0) {
-                // Update the popular foods container with search results
                 const container = document.getElementById('popularFoodsContainer');
                 container.innerHTML = `<div class="col-12"><h4>Search Results for "${searchTerm}":</h4></div>`;
 
                 results.forEach(food => {
                     const foodCard = createFoodCard(food);
                     container.innerHTML += foodCard;
+                });
+                document.getElementById("showresult").scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
                 });
             } else {
                 alert(`No results found for "${searchTerm}". Try searching for Malaysian foods like "nasi lemak" or "char kway teow"`);
@@ -1087,17 +1739,32 @@
             }
         }
 
+        function hideSearchSuggestions() {
+            const suggestions = document.querySelector('.search-suggestions');
+            if (suggestions) {
+                suggestions.remove();
+            }
+        }
+
+        function selectSuggestion(suggestion) {
+            document.getElementById('searchInput').value = suggestion;
+            hideSearchSuggestions();
+            performSearch();
+        }
+
         // Food card creation and management
         function loadPopularFoods() {
             const container = document.getElementById('popularFoodsContainer');
             container.innerHTML = '';
 
-            popularFoods.forEach(food => {
+            // Filter to only include foods with IDs 1-6
+            const filteredFoods = popularFoods.filter(food => food.id >= 1 && food.id <= 6);
+
+            filteredFoods.forEach(food => {
                 const foodCard = createFoodCard(food);
                 container.innerHTML += foodCard;
             });
 
-            // Add event listeners for favorite buttons
             setTimeout(() => {
                 $('.favorite-btn').on('click', function () {
                     const foodId = parseInt($(this).data('food-id'));
@@ -1110,6 +1777,12 @@
             const isFavorite = favoritesList.includes(food.id);
             const favoriteClass = isFavorite ? 'fas' : 'far';
             const favoriteColor = isFavorite ? 'color: #e74c3c;' : '';
+
+            let targetPage = "malaysia.html";
+            if (food.id >= 67 && food.id <= 1010) {
+                targetPage = "global.html";
+            }
+
 
             return `
             <div class="col-lg-4 col-md-6 fade-in">
@@ -1132,9 +1805,9 @@
                                 <span class="rating-text">${food.rating}/5</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="details.html?id=${food.id}" class="btn btn-custom">
-                                    <i class="fas fa-info-circle"></i> Learn More
-                                </a>
+                               <a href="${targetPage}?id=${food.id}" class="btn-custom">
+                    <i class="fas fa-info-circle"></i> Learn More
+                </a>
                                 <small class="text-muted">
                                     <i class="fas fa-map-marker-alt"></i> ${food.country}
                                 </small>
@@ -1170,21 +1843,15 @@
             const index = favoritesList.indexOf(foodId);
 
             if (index > -1) {
-                // Remove from favorites
                 favoritesList.splice(index, 1);
                 showNotification('Removed from favorites', 'info');
             } else {
-                // Add to favorites
                 favoritesList.push(foodId);
                 showNotification('Added to favorites!', 'success');
             }
 
-            // Update localStorage
             localStorage.setItem('streetFood_favorites', JSON.stringify(favoritesList));
-
-            // Refresh the display
             loadPopularFoods();
-
             console.log('Favorites updated:', favoritesList);
         }
 
@@ -1208,12 +1875,9 @@
         // User preferences management
         function loadUserPreferences() {
             userPreferences = JSON.parse(localStorage.getItem('streetFood_preferences'));
-
-            // Apply theme if needed
             if (userPreferences.theme === 'dark') {
                 document.body.classList.add('dark-theme');
             }
-
             console.log('User preferences loaded:', userPreferences);
         }
 
@@ -1225,7 +1889,6 @@
 
         // Animation setup
         function setupAnimations() {
-            // Intersection Observer for scroll animations
             const observerOptions = {
                 threshold: 0.1,
                 rootMargin: '0px 0px -50px 0px'
@@ -1239,7 +1902,6 @@
                 });
             }, observerOptions);
 
-            // Observe elements for animation
             document.querySelectorAll('.food-card, .feature-card').forEach(el => {
                 observer.observe(el);
             });
@@ -1255,10 +1917,10 @@
                 }
             });
 
-            // Add autocomplete suggestions
+            // UPDATED: Show suggestions from first character
             searchInput.addEventListener('input', function (e) {
                 const value = e.target.value.toLowerCase();
-                if (value.length > 2) {
+                if (value.length > 0) {  // Changed from > 2 to > 0
                     showSearchSuggestions(value);
                 } else {
                     hideSearchSuggestions();
@@ -1266,64 +1928,22 @@
             });
         });
 
-        function showSearchSuggestions(query) {
-            const suggestions = [
-                'nasi lemak', 'char kway teow', 'roti canai', 'satay', 'laksa',
-                'cendol', 'teh tarik', 'mee goreng', 'rendang', 'asam laksa'
-            ].filter(item => item.includes(query));
-
-            if (suggestions.length > 0) {
-                let suggestionHTML = '<div class="search-suggestions position-absolute w-100 bg-white border rounded shadow-sm" style="top: 100%; z-index: 1000;">';
-
-                suggestions.slice(0, 5).forEach(suggestion => {
-                    suggestionHTML += `<div class="suggestion-item p-2 border-bottom" style="cursor: pointer;" onclick="selectSuggestion('${suggestion}')">${suggestion}</div>`;
-                });
-
-                suggestionHTML += '</div>';
-
-                const searchContainer = document.querySelector('.search-container');
-                const existingSuggestions = searchContainer.querySelector('.search-suggestions');
-                if (existingSuggestions) {
-                    existingSuggestions.remove();
-                }
-                searchContainer.insertAdjacentHTML('beforeend', suggestionHTML);
-            }
-        }
-
-        function hideSearchSuggestions() {
-            const suggestions = document.querySelector('.search-suggestions');
-            if (suggestions) {
-                suggestions.remove();
-            }
-        }
-
-        function selectSuggestion(suggestion) {
-            document.getElementById('searchInput').value = suggestion;
-            hideSearchSuggestions();
-            performSearch();
-        }
-
-        // Analytics and tracking functions
+        // Additional functions
         function trackUserInteraction(action, details = {}) {
             const sessionData = JSON.parse(sessionStorage.getItem('streetFood_session'));
-
             if (!sessionData.interactions) {
                 sessionData.interactions = [];
             }
-
             sessionData.interactions.push({
                 action: action,
                 details: details,
                 timestamp: new Date().toISOString()
             });
-
             sessionStorage.setItem('streetFood_session', JSON.stringify(sessionData));
         }
 
-        // API integration for enhanced functionality
         async function fetchFoodData() {
             try {
-                // Simulate API call for demo purposes
                 const response = await new Promise(resolve => {
                     setTimeout(() => {
                         resolve({
@@ -1333,7 +1953,6 @@
                         });
                     }, 1000);
                 });
-
                 console.log('Food data fetched successfully');
                 return response;
             } catch (error) {
@@ -1344,66 +1963,41 @@
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function (e) {
-            // Alt + S for search focus
             if (e.altKey && e.key === 's') {
                 e.preventDefault();
                 document.getElementById('searchInput').focus();
             }
-
-            // Alt + H for home
             if (e.altKey && e.key === 'h') {
                 e.preventDefault();
                 window.location.href = '#home';
             }
         });
 
-        // Cleanup function for page unload
+        // Cleanup function
         window.addEventListener('beforeunload', function () {
-            // Update session end time
             const sessionData = JSON.parse(sessionStorage.getItem('streetFood_session'));
             sessionData.endTime = new Date().toISOString();
             sessionStorage.setItem('streetFood_session', JSON.stringify(sessionData));
         });
 
-        // Social media sharing functions
-        function shareOnFacebook(url, title) {
-            const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`;
-            window.open(shareUrl, '_blank', 'width=600,height=400');
-            trackUserInteraction('social_share', { platform: 'facebook', content: title });
-        }
-
-        function shareOnTwitter(url, title) {
-            const shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
-            window.open(shareUrl, '_blank', 'width=600,height=400');
-            trackUserInteraction('social_share', { platform: 'twitter', content: title });
-        }
-
-        // Print functionality
-        function printPage() {
-            window.print();
-            trackUserInteraction('print_page');
-        }
-
-        // Export data function
-        function exportFavorites() {
-            const favoriteFoods = popularFoods.filter(food => favoritesList.includes(food.id));
-            const dataStr = JSON.stringify(favoriteFoods, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'my_favorite_street_foods.json';
-            link.click();
-
-            trackUserInteraction('export_favorites', { count: favoriteFoods.length });
-        }
-
         console.log('🍜 Street Food Explorer - Home Page Loaded Successfully!');
         console.log('📱 Mobile responsive design activated');
         console.log('💾 Storage systems initialized');
         console.log('🎨 Animations and interactions ready');
+
+
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        window.onload = function () {
+            window.scrollTo(0, 0);
+        };
+
     </script>
 </body>
 
 </html>
+
+
+

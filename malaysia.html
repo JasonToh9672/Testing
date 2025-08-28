@@ -8,48 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style>
-        :root {
-            --primary-color: #ff6b35;
-            --secondary-color: #f7931e;
-            --accent-color: #2ecc71;
-            --dark-color: #2c3e50;
-            --light-color: #ecf0f1;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--dark-color);
-            padding-top: 76px;
-        }
-
-        /* Navigation */
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: white !important;
-        }
-
-        .navbar-nav .nav-link {
-            color: white !important;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            margin: 0 5px;
-            border-radius: 5px;
-            padding: 8px 15px !important;
-        }
-
-        .navbar-nav .nav-link:hover,
-        .navbar-nav .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
 
         /* Hero Section */
         .malaysia-hero {
@@ -84,8 +44,20 @@
             padding: 30px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             position: sticky;
-            top: 76px;
+            top: 65px;
             z-index: 100;
+        }
+
+        #toggleFiltersBtn {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        #toggleFiltersBtn:hover {
+            opacity: 0.9;
         }
 
         .filter-btn {
@@ -421,28 +393,33 @@
             }
         }
 
-        /* Notification */
         .notification {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            background: var(--accent-color);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
+        display: none; /* hidden by default */
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 250px;
+        background: #28a745; /* default green (success) */
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        font-size: 16px;
+        z-index: 2000;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.5s, transform 0.5s;
         }
 
         .notification.show {
-            transform: translateX(0);
+            opacity: 1;
+            transform: translateX(0)
         }
     </style>
 </head>
 
 <body>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
@@ -481,11 +458,20 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="malaysia-hero">
-        <div class="container">
+   <section class="malaysia-hero">
+        <div class="hero-background-layer"></div> <div class="container position-relative" style="z-index: 2;">
             <div class="animate__animated animate__fadeInDown">
                 <h1>Malaysian Street Food</h1>
                 <p class="lead">Discover the incredible flavors of Malaysia's diverse culinary heritage</p>
+            </div>
+            
+            <div id="featuredDish" class="mt-4 p-3 rounded animate__animated animate__fadeInUp" style="animation-delay: 0.5s; background: rgba(0,0,0,0.3); display: none; border: 1px solid rgba(255, 255, 255, 0.2);">
+                </div>
+            
+            <div class="mt-4 animate__animated animate__fadeInUp" style="animation-delay: 0.8s;">
+                <a href="#foodContainer" class="btn btn-lg btn-custom-hero">
+                    <i class="fas fa-arrow-down me-2"></i> Explore Dishes
+                </a>
             </div>
         </div>
     </section>
@@ -493,21 +479,39 @@
     <!-- Filter Section -->
     <section class="filter-section">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-3">
-                    <h5 class="mb-md-0 mb-3">Filter by Category:</h5>
-                </div>
-                <div class="col-md-9">
-                    <div id="filterButtons" class="text-md-end">
-                        <button class="filter-btn active" data-category="all">All Foods</button>
-                        <button class="filter-btn" data-category="rice">Rice Dishes</button>
-                        <button class="filter-btn" data-category="noodles">Noodles</button>
-                        <button class="filter-btn" data-category="snacks">Snacks</button>
-                        <button class="filter-btn" data-category="desserts">Desserts</button>
-                        <button class="filter-btn" data-category="drinks">Drinks</button>
+
+            <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 0.5rem;">
+                <button class="btn btn-sm btn-outline-secondary ms auto" id="toggleFiltersBtn" data-bs-toggle="collapse" data-bs-target="#filtersContent">Hide Filters</button>
+            </div>
+
+            <div class="collapse show" id="filtersContent">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <h5 class="mb-md-0 mb-3">Filter by Search:</h5>
+                        <br>
+                        <h5 class="mb-md-0 mb-3">Filter by Category:</h5>
+                    </div>
+                    <div class="col-md-9">
+                        <div id="filterButtons" class="text-md-end">
+                            <div class="mt-3 mt-md-0 d-flex gap-2 justify-content-md-end align-items-center">
+                            <label for="searchInput" class="visually-hidden">Search Malaysian foods</label>
+                            <input id="searchInput" type="search" class="form-control"
+                                placeholder="Search foods, tags, origin… (e.g., 'Penang', 'spicy', 'noodles')"
+                                style="max-width: 380px;">
+                                <button id="clearSearchBtn" class="btn btn-outline-secondary" type="button" title="Clear search">
+                                <i class="fas fa-times"></i>
+                                </button>
+                                </div>
+                            <button class="filter-btn active" data-category="all">All Foods</button>
+                            <button class="filter-btn" data-category="rice">Rice Dishes</button>
+                            <button class="filter-btn" data-category="noodles">Noodles</button>
+                            <button class="filter-btn" data-category="snacks">Snacks</button>
+                            <button class="filter-btn" data-category="desserts">Desserts</button>
+                            <button class="filter-btn" data-category="drinks">Drinks</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </div>    
         </div>
     </section>
 
@@ -529,6 +533,9 @@
         </div>
     </section>
 
+    <!-- Modal -->
+    <div id="modalContainer"></div>
+
     <!-- Stats Section -->
     <section class="stats-section">
         <div class="container">
@@ -536,7 +543,7 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="stat-card animate__animated animate__fadeInUp">
-                        <span class="stat-number counter" data-target="200">0</span>
+                        <span class="stat-number counter" data-target="66">0</span>
                         <div class="stat-label">Different Dishes</div>
                     </div>
                 </div>
@@ -554,7 +561,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
-                        <span class="stat-number">24/7</span>
+                        <span class="stat-number">12/7</span>
                         <div class="stat-label">Availability</div>
                     </div>
                 </div>
@@ -571,10 +578,9 @@
                     <p>Your ultimate guide to discovering the world's most amazing street foods. From local Malaysian
                         favorites to global culinary treasures.</p>
                     <div class="social-links mt-3">
-                        <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
-                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="https://web.facebook.com/StreetFoodExplorer9672/" title="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="https://x.com/Street_Food9672" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/street_food_explorer9672/" title="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
                 <div class="footer-section">
@@ -598,7 +604,7 @@
                 <div class="footer-section">
                     <h4>Contact Info</h4>
                     <p><i class="fas fa-envelope"></i> info@streetfoodexplorer.com</p>
-                    <p><i class="fas fa-phone"></i> +60 12-345-6789</p>
+                    <p><i class="fas fa-phone"></i> +60 16-510-9672</p>
                     <p><i class="fas fa-map-marker-alt"></i> Kuala Lumpur, Malaysia</p>
                 </div>
             </div>
@@ -634,7 +640,8 @@
                 emoji: "🍚",
                 tags: ["National Dish", "Spicy", "Coconut"],
                 origin: "Malaysia",
-                difficulty: "Medium"
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Nasi Lemak.jpg"
             },
             {
                 id: 2,
@@ -646,138 +653,944 @@
                 emoji: "🍜",
                 tags: ["Stir-fried", "Prawns", "Popular"],
                 origin: "Penang",
-                difficulty: "Hard"
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Char Kway Teow.jpg"
             },
             {
                 id: 3,
                 name: "Roti Canai",
-                description: "Flaky, crispy flatbread served with curry dipping sauce. Perfect for breakfast or any time snack.",
-                category: "snacks",
-                price: "RM 1-3",
+                description: "Flaky and crispy flatbread served with dhal curry or meat curry. Popular breakfast dish in Malaysia.",
+                category: "bread",
+                price: "RM 1.50-3",
                 rating: 4.7,
-                emoji: "🫓",
-                tags: ["Bread", "Curry", "Crispy"],
-                origin: "Indian Malaysian",
-                difficulty: "Hard"
+                emoji: "🥞",
+                tags: ["Breakfast", "Curry", "Flatbread"],
+                origin: "Malaysia",
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/Roti Canai.jpg"
             },
             {
                 id: 4,
                 name: "Satay",
-                description: "Grilled skewered meat (chicken, beef, or mutton) served with peanut sauce and rice cakes.",
-                category: "snacks",
-                price: "RM 0.80-1.50/stick",
-                rating: 4.6,
+                description: "Skewered and grilled meat served with peanut sauce, rice cakes, and cucumber.",
+                category: "meat",
+                price: "RM 0.80-1.50 per stick",
+                rating: 4.9,
                 emoji: "🍢",
-                tags: ["Grilled", "Peanut Sauce", "Skewered"],
-                origin: "Malay",
-                difficulty: "Medium"
+                tags: ["Grilled", "Peanut Sauce", "Street Food"],
+                origin: "Kajang",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Satay.jpg"
             },
             {
                 id: 5,
                 name: "Laksa",
-                description: "Spicy noodle soup with coconut milk, prawns, fish cake, and herbs. Rich and flavorful broth.",
+                description: "Spicy noodle soup with coconut milk or tamarind base, often served with prawns, chicken, or fish.",
                 category: "noodles",
                 price: "RM 6-15",
-                rating: 4.7,
+                rating: 4.8,
                 emoji: "🍲",
-                tags: ["Spicy", "Coconut", "Soup"],
-                origin: "Penang/Johor",
-                difficulty: "Hard"
+                tags: ["Soup", "Spicy", "Seafood"],
+                origin: "Penang/Sarawak",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Laksa.jpg"
             },
             {
                 id: 6,
-                name: "Cendol",
-                description: "Refreshing dessert with pandan jelly, coconut milk, palm sugar syrup, and shaved ice.",
-                category: "desserts",
-                price: "RM 2-5",
-                rating: 4.5,
-                emoji: "🍧",
-                tags: ["Cold", "Sweet", "Pandan"],
-                origin: "Malaysia/Indonesia",
-                difficulty: "Medium"
+                name: "Hainanese Chicken Rice",
+                description: "Steamed or roasted chicken served with fragrant rice cooked in chicken stock, and chili sauce.",
+                category: "rice",
+                price: "RM 6-10",
+                rating: 4.7,
+                emoji: "🍗",
+                tags: ["Chicken", "Comfort Food", "Popular"],
+                origin: "Hainan/Ipoh",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Hainanese Chicken Rice.jpg"
             },
             {
                 id: 7,
-                name: "Teh Tarik",
-                description: "Malaysia's national drink - pulled tea with condensed milk, creating a frothy, creamy beverage.",
-                category: "drinks",
-                price: "RM 1.50-3",
-                rating: 4.4,
-                emoji: "🍵",
-                tags: ["Hot", "Milky", "Frothy"],
+                name: "Mee Goreng Mamak",
+                description: "Spicy fried noodles with tofu, potatoes, eggs, vegetables, and squid.",
+                category: "noodles",
+                price: "RM 5-10",
+                rating: 4.6,
+                emoji: "🍝",
+                tags: ["Spicy", "Indian Muslim", "Street Food"],
                 origin: "Malaysia",
-                difficulty: "Medium"
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Mee Goreng Mamak.webp"
             },
             {
                 id: 8,
-                name: "Mee Goreng",
-                description: "Spicy stir-fried yellow noodles with vegetables, tofu, and your choice of meat or seafood.",
-                category: "noodles",
-                price: "RM 4-10",
-                rating: 4.3,
-                emoji: "🍝",
-                tags: ["Stir-fried", "Spicy", "Versatile"],
-                origin: "Indian Malaysian",
-                difficulty: "Medium"
+                name: "Teh Tarik",
+                description: "Malaysia's national drink. Pulled milk tea with frothy top.",
+                category: "drink",
+                price: "RM 1.50-3",
+                rating: 4.9,
+                emoji: "🥤",
+                tags: ["Tea", "Sweet", "Popular"],
+                origin: "Malaysia",
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/Teh Tarik.jpg"
             },
             {
                 id: 9,
-                name: "Rendang",
-                description: "Slow-cooked beef in coconut milk and spices until tender and rich. A festive favorite.",
-                category: "rice",
-                price: "RM 8-20",
+                name: "Cendol",
+                description: "Shaved ice dessert with green rice flour jelly, coconut milk, palm sugar syrup, and red beans.",
+                category: "dessert",
+                price: "RM 3-6",
                 rating: 4.8,
-                emoji: "🥘",
-                tags: ["Slow-cooked", "Coconut", "Spicy"],
-                origin: "Minangkabau",
-                difficulty: "Hard"
+                emoji: "🍧",
+                tags: ["Dessert", "Sweet", "Icy"],
+                origin: "Malaysia",
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/Cendol.jpg"
             },
             {
                 id: 10,
-                name: "Apam Balik",
-                description: "Crispy pancake filled with peanuts, corn, sugar, and margarine. A popular street snack.",
-                category: "desserts",
-                price: "RM 2-4",
-                rating: 4.2,
-                emoji: "🥞",
-                tags: ["Crispy", "Sweet", "Peanuts"],
+                name: "ABC (Ais Kacang)",
+                description: "Shaved ice dessert topped with red beans, sweet corn, grass jelly, syrup, and condensed milk.",
+                category: "dessert",
+                price: "RM 4-8",
+                rating: 4.7,
+                emoji: "🍨",
+                tags: ["Icy", "Sweet", "Colorful"],
                 origin: "Malaysia",
-                difficulty: "Easy"
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/ABC.jpg"
             },
             {
                 id: 11,
-                name: "Assam Laksa",
-                description: "Tangy fish-based soup with tamarind, rice noodles, and fresh herbs. Penang's pride.",
-                category: "noodles",
-                price: "RM 5-12",
+                name: "Nasi Kandar",
+                description: "Rice served with various curries and side dishes, originating from Penang.",
+                category: "rice",
+                price: "RM 8-20",
                 rating: 4.6,
-                emoji: "🐟",
-                tags: ["Tangy", "Fish", "Herbs"],
+                emoji: "🍛",
+                tags: ["Curry", "Spicy", "Rice"],
                 origin: "Penang",
-                difficulty: "Hard"
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Nasi Kandar.jpg"
             },
             {
                 id: 12,
-                name: "Ais Kacang",
-                description: "Shaved ice dessert with red beans, corn, jelly, and colorful syrups. Perfect for hot weather.",
-                category: "desserts",
-                price: "RM 3-6",
-                rating: 4.3,
-                emoji: "🍨",
-                tags: ["Cold", "Colorful", "Sweet"],
+                name: "Banana Leaf Rice",
+                description: "South Indian-inspired dish of rice served on a banana leaf with vegetables, curries, and papadum.",
+                category: "rice",
+                price: "RM 8-15",
+                rating: 4.7,
+                emoji: "🌿",
+                tags: ["Vegetarian", "Curry", "Indian"],
                 origin: "Malaysia",
-                difficulty: "Easy"
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Banana Leaf Rice.jpg"
+            },
+            {
+                id: 13,
+                name: "Kaya Toast",
+                description: "Toasted bread with coconut egg jam (kaya) and butter, served with half-boiled eggs.",
+                category: "snack",
+                price: "RM 2-5",
+                rating: 4.5,
+                emoji: "🍞",
+                tags: ["Breakfast", "Sweet", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/Kaya Toast.jpg"
+            },
+            {
+                id: 14,
+                name: "Rendang",
+                description: "Slow-cooked dry curry dish made with beef, coconut milk, and spices.",
+                category: "meat",
+                price: "RM 10-25",
+                rating: 4.9,
+                emoji: "🥘",
+                tags: ["Beef", "Curry", "Rich"],
+                origin: "Malaysia",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Rendang.jpg"
+            },
+            {
+                id: 15,
+                name: "Kuih Lapis",
+                description: "Colorful layered steamed rice flour and coconut milk cake.",
+                category: "dessert",
+                price: "RM 2-5",
+                rating: 4.6,
+                emoji: "🎂",
+                tags: ["Sweet", "Layered", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kuih Lapis.jpg"
+            },
+            {
+                id: 16,
+                name: "Otak-Otak",
+                description: "Grilled fish cake made of ground fish meat mixed with spices and wrapped in banana leaves.",
+                category: "seafood",
+                price: "RM 1.50-4",
+                rating: 4.5,
+                emoji: "🐟",
+                tags: ["Grilled", "Spicy", "Traditional"],
+                origin: "Johor",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Otak otak.jpg"
+            },
+            {
+                id: 17,
+                name: "Ikan Bakar",
+                description: "Grilled fish marinated with spices and served with sambal.",
+                category: "seafood",
+                price: "RM 15-30",
+                rating: 4.7,
+                emoji: "🐠",
+                tags: ["Grilled", "Spicy", "Seafood"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Ikan Bakar.jpg"
+            },
+            {
+                id: 18,
+                name: "Keropok Lekor",
+                description: "Traditional fish crackers from Terengganu, deep-fried and crispy.",
+                category: "snack",
+                price: "RM 1-3",
+                rating: 4.6,
+                emoji: "🍘",
+                tags: ["Snack", "Crispy", "Traditional"],
+                origin: "Terengganu",
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/Keropok Lekor.jpg"
+            },
+            {
+                id: 19,
+                name: "Mee Rebus",
+                description: "Yellow noodles served in a thick, spicy-sweet gravy made of potatoes, curry, and shrimp paste.",
+                category: "noodles",
+                price: "RM 5-8",
+                rating: 4.5,
+                emoji: "🍜",
+                tags: ["Spicy", "Gravy", "Street Food"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Mee Rebus.jpg"
+            },
+            {
+                id: 20,
+                name: "Nasi Dagang",
+                description: "Fragrant rice steamed in coconut milk, served with fish curry and pickles.",
+                category: "rice",
+                price: "RM 6-12",
+                rating: 4.7,
+                emoji: "🍚",
+                tags: ["Rice", "Coconut", "Traditional"],
+                origin: "Terengganu/Kelantan",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Nasi Dagang.jpg"
+            },
+            {
+                id: 21,
+                name: "Pulut Panggang",
+                description: "Glutinous rice grilled in banana leaf, often filled with spicy coconut.",
+                category: "snack",
+                price: "RM 2-4",
+                rating: 4.5,
+                emoji: "🍙",
+                tags: ["Grilled", "Glutinous Rice", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Pulut Panggang.jpg"
+            },
+            {
+                id: 22,
+                name: "Char Siew Rice",
+                description: "Rice served with barbecued pork (char siew), cucumber, and sweet soy sauce.",
+                category: "rice",
+                price: "RM 6-12",
+                rating: 4.6,
+                emoji: "🍖",
+                tags: ["Pork", "BBQ", "Chinese"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Char Siew Rice.jpg"
+            },
+            {
+                id: 23,
+                name: "Hokkien Mee",
+                description: "Dark soy sauce fried noodles with pork lard, prawns, and cabbage.",
+                category: "noodles",
+                price: "RM 6-12",
+                rating: 4.5,
+                emoji: "🍜",
+                tags: ["Fried", "Dark Soy", "Chinese"],
+                origin: "Kuala Lumpur",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Hokkien Mee.jpg"
+            },
+            {
+                id: 24,
+                name: "Claypot Rice",
+                description: "Rice cooked in claypot with Chinese sausage, chicken, and salted fish.",
+                category: "rice",
+                price: "RM 8-15",
+                rating: 4.6,
+                emoji: "🥘",
+                tags: ["Claypot", "Chinese", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Claypot Rice.jpg"
+            },
+            {
+                id: 25,
+                name: "Roti Jala",
+                description: "Net-like crepe served with chicken or beef curry.",
+                category: "bread",
+                price: "RM 2-6",
+                rating: 4.6,
+                emoji: "🥞",
+                tags: ["Crepe", "Curry", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Roti Jala.jpg"
+            },
+
+            {
+                id: 26,
+                name: "Rojak",
+                description: "Fruit and vegetable salad mixed with a thick, spicy peanut and shrimp paste sauce.",
+                category: "snacks",
+                price: "RM 4-8",
+                rating: 4.5,
+                emoji: "🥗",
+                tags: ["Salad", "Tangy", "Spicy"],
+                origin: "Malaysia",
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/Rojak.jpg"
+            },
+            {
+                id: 27,
+                name: "Kuih Seri Muka",
+                description: "Two-layered dessert with glutinous rice bottom and pandan custard top.",
+                category: "dessert",
+                price: "RM 2-5",
+                rating: 4.6,
+                emoji: "🍮",
+                tags: ["Traditional", "Sweet", "Layered"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kuih Seri Muka.jpg"
+            },
+            {
+                id: 28,
+                name: "Apam Balik",
+                description: "Thick or thin pancake filled with peanuts, corn, and sugar.",
+                category: "dessert",
+                price: "RM 2-6",
+                rating: 4.7,
+                emoji: "🥞",
+                tags: ["Pancake", "Street Food", "Sweet"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Apam Balik.jpg"
+            },
+            {
+                id: 29,
+                name: "Murtabak",
+                description: "Stuffed pan-fried bread with minced meat, onions, and egg.",
+                category: "bread",
+                price: "RM 6-12",
+                rating: 4.7,
+                emoji: "🥟",
+                tags: ["Stuffed", "Street Food", "Indian Muslim"],
+                origin: "Malaysia",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Murtabak.jpg"
+            },
+            {
+                id: 30,
+                name: "Nasi Kerabu",
+                description: "Blue-colored rice served with fried fish or chicken, salted egg, and local herbs.",
+                category: "rice",
+                price: "RM 6-15",
+                rating: 4.8,
+                emoji: "💙",
+                tags: ["Colorful", "Traditional", "Kelantanese"],
+                origin: "Kelantan",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Nasi Kerabu.jpg"
+            },
+            {
+                id: 31,
+                name: "Nasi Ulam",
+                description: "Herbed rice salad mixed with local spices, herbs, and dried fish.",
+                category: "rice",
+                price: "RM 5-10",
+                rating: 4.5,
+                emoji: "🥗",
+                tags: ["Herbal", "Traditional", "Healthy"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Nasi Ulam.jpg"
+            },
+            {
+                id: 32,
+                name: "Pisang Goreng",
+                description: "Deep-fried banana fritters, crispy on the outside and soft inside.",
+                category: "snack",
+                price: "RM 1-3",
+                rating: 4.6,
+                emoji: "🍌",
+                tags: ["Banana", "Fried", "Snack"],
+                origin: "Malaysia",
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/Pisang Goreng.jpg"
+            },
+            {
+                id: 33,
+                name: "Mee Siam",
+                description: "Rice vermicelli noodles served with spicy, tangy gravy.",
+                category: "noodles",
+                price: "RM 4-8",
+                rating: 4.5,
+                emoji: "🍝",
+                tags: ["Tangy", "Spicy", "Noodles"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Mee Siam.avif"
+            },
+            {
+                id: 34,
+                name: "Roti Tisu",
+                description: "Extra thin, crispy flatbread shaped like a tall cone, often drizzled with sugar and condensed milk.",
+                category: "bread",
+                price: "RM 3-8",
+                rating: 4.6,
+                emoji: "🍯",
+                tags: ["Sweet", "Tall", "Flatbread"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Roti Tisu.jpg"
+            },
+            {
+                id: 35,
+                name: "Kuih Ketayap",
+                description: "Green crepe filled with grated coconut sweetened with palm sugar.",
+                category: "dessert",
+                price: "RM 2-4",
+                rating: 4.5,
+                emoji: "🥥",
+                tags: ["Coconut", "Crepe", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kuih Ketayap.jpeg"
+            },
+            {
+                id: 36,
+                name: "Soto Ayam",
+                description: "Spiced chicken soup with rice cakes, vermicelli, and bean sprouts.",
+                category: "soup",
+                price: "RM 6-12",
+                rating: 4.6,
+                emoji: "🍲",
+                tags: ["Soup", "Spicy", "Chicken"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Soto Ayam.jpg"
+            },
+            {
+                id: 37,
+                name: "Kuih Bahulu",
+                description: "Small sponge cakes baked in traditional molds, usually served during festive seasons.",
+                category: "dessert",
+                price: "RM 5-10 per pack",
+                rating: 4.5,
+                emoji: "🧁",
+                tags: ["Traditional", "Cake", "Festive"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kuih Bahulu.jpeg"
+            },
+            {
+                id: 38,
+                name: "Maggi Goreng",
+                description: "Instant noodles stir-fried with egg, vegetables, and sometimes meat or seafood.",
+                category: "noodles",
+                price: "RM 5-8",
+                rating: 4.6,
+                emoji: "🍜",
+                tags: ["Instant", "Mamak", "Street Food"],
+                origin: "Malaysia",
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/Maggi Goreng.jpg"
+            },
+            {
+                id: 39,
+                name: "Kuih Karipap",
+                description: "Deep-fried pastry filled with curried potatoes, chicken, or sardines.",
+                category: "snack",
+                price: "RM 1-3 each",
+                rating: 4.6,
+                emoji: "🥟",
+                tags: ["Pastry", "Curry", "Snack"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kuih Karipap.jpg"
+            },
+            {
+                id: 40,
+                name: "Lemang",
+                description: "Glutinous rice cooked in bamboo with coconut milk, traditionally eaten during Hari Raya.",
+                category: "rice",
+                price: "RM 10-20 per stick",
+                rating: 4.7,
+                emoji: "🎋",
+                tags: ["Traditional", "Festive", "Glutinous Rice"],
+                origin: "Malaysia",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Lemang.png"
+            },
+            {
+                id: 41,
+                name: "Mee Bandung",
+                description: "Noodles in a rich tomato-based gravy with beef, prawns, and egg.",
+                category: "noodles",
+                price: "RM 6-12",
+                rating: 4.5,
+                emoji: "🍝",
+                tags: ["Gravy", "Tomato", "Rich"],
+                origin: "Johor",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Mee Bandung.jpg"
+            },
+            {
+                id: 42,
+                name: "Kuih Dodol",
+                description: "Sticky toffee-like sweet made of coconut milk, palm sugar, and glutinous rice flour.",
+                category: "dessert",
+                price: "RM 5-15",
+                rating: 4.5,
+                emoji: "🍬",
+                tags: ["Sticky", "Sweet", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Kuih Dodol.jpg"
+            },
+            {
+                id: 43,
+                name: "Mee Kolok",
+                description: "Dry-tossed noodles with soy sauce, shallot oil, and beef or chicken.",
+                category: "noodles",
+                price: "RM 5-10",
+                rating: 4.7,
+                emoji: "🍜",
+                tags: ["Sarawak", "Dry Noodles", "Simple"],
+                origin: "Sarawak",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Mee Kolok.jpg"
+            },
+            {
+                id: 44,
+                name: "Nasi Lemuni",
+                description: "Rice cooked with lemuni leaves, believed to have health benefits, served with side dishes.",
+                category: "rice",
+                price: "RM 5-10",
+                rating: 4.4,
+                emoji: "🌿",
+                tags: ["Herbal", "Traditional", "Healthy"],
+                origin: "Kedah",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Nasi Lemuni.jpg"
+            },
+            {
+                id: 45,
+                name: "Lontong",
+                description: "Compressed rice cakes in coconut milk-based vegetable stew.",
+                category: "rice",
+                price: "RM 6-12",
+                rating: 4.5,
+                emoji: "🥥",
+                tags: ["Vegetable", "Stew", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Lontong.jpg"
+            },
+            {
+                id: 46,
+                name: "Popiah",
+                description: "Fresh spring rolls filled with jicama, carrots, lettuce, and sometimes egg or prawns.",
+                category: "snack",
+                price: "RM 3-6",
+                rating: 4.6,
+                emoji: "🥬",
+                tags: ["Spring Roll", "Fresh", "Vegetable"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Popiah.jpg"
+            },
+            {
+                id: 47,
+                name: "Nasi Tumpang",
+                description: "Cone-shaped rice wrapped in banana leaf with layers of dishes such as curry, fried egg, and serunding.",
+                category: "rice",
+                price: "RM 6-12",
+                rating: 4.5,
+                emoji: "🍙",
+                tags: ["Kelantan", "Traditional", "Layered"],
+                origin: "Kelantan",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Nasi Tumpang.jpg"
+            },
+            {
+                id: 48,
+                name: "Kuih Onde-Onde",
+                description: "Soft, chewy dough balls filled with sweet Gula Melaka (palm sugar) and infused with the fragrant flavor of pandan.",
+                category: "dessert",
+                price: "RM 2-4",
+                rating: 4.7,
+                emoji: "🥥",
+                tags: ["Coconut", "Sweet", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kuih Onde Onde.jpg"
+            },
+            {
+                id: 49,
+                name: "Sup Kambing",
+                description: "Spiced mutton soup cooked with herbs, potatoes, and carrots.",
+                category: "soup",
+                price: "RM 8-15",
+                rating: 4.6,
+                emoji: "🍲",
+                tags: ["Mutton", "Spicy", "Soup"],
+                origin: "Malaysia",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Sup Kambing.jpg"
+            },
+            {
+                id: 50,
+                name: "Mee Soto",
+                description: "Noodles in a flavorful spiced chicken broth, served with shredded chicken and bean sprouts.",
+                category: "noodles",
+                price: "RM 6-10",
+                rating: 4.6,
+                emoji: "🍜",
+                tags: ["Spicy", "Chicken", "Soup"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Mee Soto.jpg"
+            },    
+            {
+                id: 51,
+                name: "Ayam Percik",
+                description: "Grilled chicken marinated in spiced coconut sauce, popular during Ramadan bazaars.",
+                category: "meat",
+                price: "RM 6-12",
+                rating: 4.7,
+                emoji: "🍗",
+                tags: ["Chicken", "Grilled", "Spicy"],
+                origin: "Kelantan",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Ayam Percik.jpg"
+            },
+            {
+                id: 52,
+                name: "Kuih Tepung Pelita",
+                description: "Two-layer coconut milk dessert steamed in banana leaf containers.",
+                category: "dessert",
+                price: "RM 2-4",
+                rating: 4.5,
+                emoji: "🍮",
+                tags: ["Sweet", "Coconut Milk", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kuih Tepung Pelita.jpg"
+            },
+            {
+                id: 53,
+                name: "Mee Kari",
+                description: "Curry noodles served with chicken, tofu puffs, cockles, and bean sprouts.",
+                category: "noodles",
+                price: "RM 6-12",
+                rating: 4.6,
+                emoji: "🍜",
+                tags: ["Curry", "Spicy", "Noodles"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Mee Kari.jpeg"
+            },
+            {
+                id: 54,
+                name: "Pulut Inti",
+                description: "Glutinous rice topped with sweetened grated coconut wrapped in banana leaf.",
+                category: "snack",
+                price: "RM 2-4",
+                rating: 4.5,
+                emoji: "🍙",
+                tags: ["Coconut", "Traditional", "Sweet"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Pulut Inti.jpg"
+            },
+            {
+                id: 55,
+                name: "Kaya Puff",
+                description: "Flaky pastry filled with coconut egg jam (kaya).",
+                category: "dessert",
+                price: "RM 2-5",
+                rating: 4.4,
+                emoji: "🥐",
+                tags: ["Pastry", "Sweet", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kaya Puff.jpg"
+            },
+            {
+                id: 56,
+                name: "Mee Jawa",
+                description: "Yellow noodles served with sweet-spicy gravy, potatoes, bean sprouts, and fried shallots.",
+                category: "noodles",
+                price: "RM 5-10",
+                rating: 4.5,
+                emoji: "🍝",
+                tags: ["Spicy", "Sweet", "Street Food"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Mee Jawa.jpg"
+            },
+            {
+                id: 57,
+                name: "Pulut Durian",
+                description: "Glutinous rice served with fresh durian and coconut milk.",
+                category: "dessert",
+                price: "RM 8-15",
+                rating: 4.6,
+                emoji: "🥭",
+                tags: ["Durian", "Sweet", "Rich"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Pulut Durian.jpg"
+            },
+            {
+                id: 58,
+                name: "Nasi Ayam Penyet",
+                description: "Indonesian-style smashed fried chicken served with sambal and rice.",
+                category: "rice",
+                price: "RM 8-15",
+                rating: 4.6,
+                emoji: "🍗",
+                tags: ["Spicy", "Chicken", "Indonesian"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Nasi Ayam Penyet.jpeg"
+            },
+            {
+                id: 59,
+                name: "Kuih Cucur Badak",
+                description: "Deep-fried sweet potato dough filled with spicy coconut filling.",
+                category: "snack",
+                price: "RM 2-4",
+                rating: 4.4,
+                emoji: "🥔",
+                tags: ["Fried", "Spicy", "Coconut"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kuih Cucur Badak.jpg"
+            },
+            {
+                id: 60,
+                name: "Asam Pedas",
+                description: "Spicy and sour fish stew with tamarind, chili, and spices.",
+                category: "seafood",
+                price: "RM 8-20",
+                rating: 4.7,
+                emoji: "🐟",
+                tags: ["Sour", "Spicy", "Stew"],
+                origin: "Melaka/Johor",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Asam Pedas.jpg"
+            },
+            {
+                id: 61,
+                name: "Kuih Keria",
+                description: "Sweet potato doughnuts glazed with palm sugar syrup.",
+                category: "dessert",
+                price: "RM 2-5",
+                rating: 4.6,
+                emoji: "🍩",
+                tags: ["Donut", "Sweet", "Traditional"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Kuih Keria.jpg"
+            },
+
+            {
+                id: 62,
+                name: "Putu Mayam",
+                description: "Rice flour noodles served with grated coconut and brown sugar.",
+                category: "dessert",
+                price: "RM 2-4",
+                rating: 4.5,
+                emoji: "🥥",
+                tags: ["Sweet", "Traditional", "Indian"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Putu Mayam.jpg"
+            },
+
+            {
+                id: 63,
+                name: "Roti John",
+                description: "Omelette sandwich with minced meat, onions, and sauces.",
+                category: "bread",
+                price: "RM 6-12",
+                rating: 4.6,
+                emoji: "🥪",
+                tags: ["Sandwich", "Street Food", "Egg"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Roti John.webp"
+            },
+            {
+                id: 64,
+                name: "Ayam Goreng Berempah",
+                description: "Spiced deep-fried chicken with crispy rempah bits.",
+                category: "meat",
+                price: "RM 6-12",
+                rating: 4.7,
+                emoji: "🍗",
+                tags: ["Fried", "Spicy", "Chicken"],
+                origin: "Malaysia",
+                difficulty: "Medium",
+                imageUrl: "images/malaysia/Ayam Goreng Berempah.jpg"
+            },
+            {
+                id: 65,
+                name: "Bak Kut Teh",
+                description: "A fragrant herbal soup made with pork ribs, garlic, and Chinese herbs, served with rice or fried dough sticks.",
+                category: "Rice dishes",
+                price: "RM 10-25",
+                rating: 4.7,
+                emoji: "🍲",
+                tags: ["Herbal", "Pork", "Chinese"],
+                origin: "Klang",
+                difficulty: "Hard",
+                imageUrl: "images/malaysia/Bak Kut Teh.jpg"
+            },
+            {
+                id: 66,
+                name: "Milo Dinosaur",
+                description: "Iced Milo topped with a generous heap of undissolved Milo powder, creating a rich and chocolatey treat.",
+                category: "Drinks",
+                price: "RM 4-8",
+                rating: 4.8,
+                emoji: "🥤",
+                tags: ["Chocolate", "Iced Drink", "Popular"],
+                origin: "Malaysia",
+                difficulty: "Easy",
+                imageUrl: "images/malaysia/Milo Dinosaur.jpg"
             }
-        ];
+
+        ]
 
         // Initialize page
         $(document).ready(function () {
+            displayFeaturedDish();
+            setupHeroInteractions();
             initializeMalaysiaPage();
             loadFavorites();
-            setTimeout(loadMalaysianFoods, 1500); // Show loading animation
+            setupFilterToggle();
+            setTimeout(loadMalaysianFoods, 200); // Show loading animation
             setupFilterButtons();
             startCounterAnimations();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const foodId = urlParams.get("id");
+
+            if (foodId) {
+                // Wait until foods are loaded
+                const tryShowModal = () => {
+                    if (malaysianFoods.length > 0) {
+                        const food = foodsData.find(f => f.id == foodId);
+                        if (food) {
+                            showFoodModal(food); 
+                        }
+                    } else {
+                        
+                        setTimeout(tryShowModal, 300);
+                    }
+                };
+                tryShowModal();
+            }
         });
+        
+
+        function displayFeaturedDish() {
+            if (foodsData.length === 0) return;
+
+            // Select a random food item from the main data array
+            const featured = foodsData[Math.floor(Math.random() * foodsData.length)];
+            const container = $('#featuredDish');
+
+            const html = `
+                <a href="#" data-featured-id="${featured.id}" id="featuredLink" title="Click to find ${featured.name} below!">
+                    <div class="d-flex align-items-center">
+                        <span class="food-emoji-featured">${featured.emoji}</span>
+                        <div>
+                            <strong>Featured Dish of the Moment:</strong> ${featured.name}
+                            <br>
+                            <small>${featured.tags.slice(0, 2).join(' • ')}</small>
+                        </div>
+                    </div>
+                </a>
+            `;
+            container.html(html).css('display', 'inline-block');
+
+            // Add click listener for smooth scroll and highlight
+            $('#featuredLink').on('click', function(e) {
+                e.preventDefault();
+                const foodId = $(this).data('featured-id');
+                const foodCardWrapper = $(`.food-item-wrapper[data-category="${normalizeCategory(featured.category)}"]`);
+                const foodCard = foodCardWrapper.find(`.view-details[data-food-id="${foodId}"]`).closest('.food-item');
+                
+                if (foodCard.length) {
+                    $('html, body').animate({
+                        scrollTop: foodCard.offset().top - 100 // Adjust for fixed navbar
+                    }, 800, function() {
+                        // Add a temporary highlight class
+                        foodCard.addClass('highlight-food');
+                        setTimeout(() => {
+                            foodCard.removeClass('highlight-food');
+                        }, 4000); // Remove highlight after 4 seconds
+                    });
+                } else {
+                    showNotification('Scroll down to find more dishes!', 'info');
+                }
+            });
+        }
+
+        function setupHeroInteractions() {
+            const hero = document.querySelector('.malaysia-hero');
+            const background = document.querySelector('.hero-background-layer');
+            if (!hero || !background) return;
+
+            hero.addEventListener('mousemove', (e) => {
+                const { clientX, clientY } = e;
+                const { offsetWidth, offsetHeight } = hero;
+                // Calculate movement intensity
+                const x = (clientX / offsetWidth - 0.5) * 20; // Lowered intensity for subtlety
+                const y = (clientY / offsetHeight - 0.5) * 20;
+
+                // Apply a 3D transformation
+                background.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${-y}deg) scale(1.05)`;
+            });
+
+            // Reset when the mouse leaves the hero section
+            hero.addEventListener('mouseleave', () => {
+                background.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale(1.05)';
+            });
+        }
 
         function initializeMalaysiaPage() {
             // Track page visit
@@ -814,7 +1627,29 @@
             // Hide loading spinner
             $('#loadingSpinner').fadeOut();
 
+            const preferences = JSON.parse(localStorage.getItem('streetFood_preferences') || '{}');
+            const lastFilter = preferences.lastMalaysianFilter || 'all';
+
+            // Find the correct filter button and trigger a click to apply the filter.
+            const $btn = $(`.filter-btn[data-category="${lastFilter}"]`);
+            if ($btn.length) {
+                $btn.trigger('click');
+            } else {
+                // Fallback to the 'All Foods' button if the saved filter is not found
+                $(`.filter-btn[data-category="all"]`).trigger('click');
+            }
+
             console.log('Malaysian foods loaded:', malaysianFoods.length);
+
+            // Restore scroll position after content has been loaded and displayed
+            const scrollPosition = sessionStorage.getItem('scrollPosition');
+            if (scrollPosition) {
+                // We use a small timeout to ensure the browser has finished rendering the new content
+                setTimeout(function() {
+                    window.scrollTo(0, parseInt(scrollPosition, 10));
+                    sessionStorage.removeItem('scrollPosition'); // Clean up for the next navigation
+                }, 100); 
+            }
         }
 
         function displayFoods(foods) {
@@ -855,20 +1690,52 @@
             }, 100);
         }
 
+         function setupFilterToggle() {
+            const toggleBtn = document.getElementById('toggleFiltersBtn');
+            const filtersContent = document.getElementById('filtersContent');
+
+            // 1. Restore the filters' visibility state when the page loads
+            if (localStorage.getItem('filtersHidden') === 'true') {
+                filtersContent.classList.remove('show');
+                toggleBtn.textContent = 'Show Filters';
+            } else {
+                filtersContent.classList.add('show');
+                toggleBtn.textContent = 'Hide Filters';
+            }
+
+            // 2. Listen for Bootstrap's 'hide' event to save the state
+            filtersContent.addEventListener('hide.bs.collapse', () => {
+                toggleBtn.textContent = 'Show Filters';
+                localStorage.setItem('filtersHidden', 'true');
+            });
+
+            // 3. Listen for Bootstrap's 'show' event to save the state
+            filtersContent.addEventListener('show.bs.collapse', () => {
+                toggleBtn.textContent = 'Hide Filters';
+                localStorage.setItem('filtersHidden', 'false');
+            });
+        }
+
         function createFoodCard(food) {
+
             const isFavorite = favoritesList.includes(food.id);
             const favoriteClass = isFavorite ? 'fas text-danger' : 'far';
 
             return $(`
-                <div class="col-lg-4 col-md-6 food-item-wrapper" data-category="${food.category}">
+                <div class="col-lg-4 col-md-6 food-item-wrapper" data-category="${normalizeCategory(food.category)}">
                     <div class="food-item animate__animated animate__fadeInUp">
                         <div class="food-image">
-                            <div class="food-emoji">${food.emoji}</div>
+                            ${
+                                (food.imageUrl || food.image)
+                                ? `<img src="${food.imageUrl || food.image}" alt="${food.name}" class="w-100 h-100" style="object-fit:cover;">`
+                                : `<div class="food-emoji">${food.emoji || ""}</div>`
+                            }
                             <div class="food-badge">${food.origin}</div>
-                            <button class="favorite-btn" data-food-id="${food.id}">
+                            <button type="button" class="favorite-btn" data-food-id="${food.id}">
                                 <i class="${favoriteClass} fa-heart"></i>
                             </button>
                         </div>
+
                         <div class="food-content">
                             <h4 class="food-title">${food.name}</h4>
                             <p class="food-description">${food.description}</p>
@@ -917,65 +1784,96 @@
             return stars;
         }
 
+
+        function normalizeCategory(cat) {
+            if (!cat) return 'other';
+            const c = String(cat).trim().toLowerCase();
+            if (['rice','rice dish','rice dishes'].includes(c)) return 'rice';
+            if (['noodle','noodles'].includes(c)) return 'noodles';
+            if (['snack','snacks'].includes(c)) return 'snacks';
+            if (['dessert','desserts','sweet'].includes(c)) return 'desserts';
+            if (['drink','drinks','beverage','beverages'].includes(c)) return 'drinks';
+            // pass-through known extras so they can be filtered too
+            if (['bread','meat','seafood','soup'].includes(c)) return c;
+            return c;
+        }
+
+   
         function setupFilterButtons() {
-            $('.filter-btn').on('click', function () {
-                const category = $(this).data('category');
+            // Delegate to the container so it still works if buttons are created later
+            $('#filterButtons')
+                .off('click', '.filter-btn')
+                .on('click', '.filter-btn', function () {
+                const category = String($(this).data('category') || 'all').toLowerCase();
 
                 // Update active button
                 $('.filter-btn').removeClass('active');
                 $(this).addClass('active');
+                currentFilter = category;
 
-                // Filter foods
-                filterFoods(category);
+                const searchTerm = $('#searchInput').val().trim();
+
+                if (searchTerm) {
+                    // If a keyword exists, re-run the search.
+                    // The performSearch function will automatically use the updated 'currentFilter'.
+                    performSearch(searchTerm);
+                } else {
+                    // If the search box is empty, just filter by the new category as before.
+                    filterFoods(category);
+                }
+
 
                 // Store filter preference
                 const preferences = JSON.parse(localStorage.getItem('streetFood_preferences') || '{}');
                 preferences.lastMalaysianFilter = category;
                 localStorage.setItem('streetFood_preferences', JSON.stringify(preferences));
 
-                // Track interaction
-                trackUserInteraction('filter_foods', { category: category });
-            });
+                // Track interaction (if your function exists)
+                if (typeof trackUserInteraction === 'function') {
+                    trackUserInteraction('filter_foods', { category });
+                }
+             });
 
-            // Load last filter preference
+            // Load last filter preference (fallback to 'all' if not found)
             const preferences = JSON.parse(localStorage.getItem('streetFood_preferences') || '{}');
-            if (preferences.lastMalaysianFilter) {
-                $(`.filter-btn[data-category="${preferences.lastMalaysianFilter}"]`).click();
+            const last = (preferences.lastMalaysianFilter || 'all').toLowerCase();
+            const $btn = $(`.filter-btn[data-category="${last}"]`);
+            ($btn.length ? $btn : $(`.filter-btn[data-category="all"]`)).first().trigger('click');
             }
-        }
 
-        function filterFoods(category) {
+
+            function filterFoods(category) {
             currentFilter = category;
 
             if (category === 'all') {
                 displayFoods(malaysianFoods);
                 $('#searchResults').hide();
-            } else {
-                const filtered = malaysianFoods.filter(food => food.category === category);
-                displayFoods(filtered);
-
-                // Show search results info
-                $('#searchResultText').text(`Found ${filtered.length} ${category} dishes`);
-                $('#searchResults').show();
+                return;
             }
-        }
 
-        function toggleFavorite(foodId) {
-            const index = favoritesList.indexOf(foodId);
+            const want = normalizeCategory(category);
+            const filtered = malaysianFoods.filter(food => normalizeCategory(food.category) === want);
+            displayFoods(filtered);
 
-            if (index > -1) {
-                favoritesList.splice(index, 1);
-                showNotification('Removed from favorites!', 'info');
+            // Show search results info
+            $('#searchResultText').text(`Found ${filtered.length} ${want} dishes`);
+            $('#searchResults').show();
+            }
+
+        function toggleFavorite(id) {
+            const idx = favoritesList.indexOf(id);
+            if (idx > -1) {
+                favoritesList.splice(idx, 1);
+                showNotification('Removed from favorites', 'info');
+                $(`.favorite-btn[data-food-id=${id}] i`).removeClass('fas text-danger').addClass('far');
             } else {
-                favoritesList.push(foodId);
-                showNotification('Added to favorites!', 'success');
+                favoritesList.push(id);
+                showNotification('Added to favorites', 'success');
+                $(`.favorite-btn[data-food-id=${id}] i`).removeClass('far').addClass('fas text-danger');
             }
 
             // Update localStorage
             localStorage.setItem('streetFood_favorites', JSON.stringify(favoritesList));
-
-            // Update display
-            displayFoods(currentFilter === 'all' ? malaysianFoods : malaysianFoods.filter(food => food.category === currentFilter));
 
             // Track interaction
             trackUserInteraction('toggle_favorite', { foodId: foodId, action: index > -1 ? 'remove' : 'add' });
@@ -996,13 +1894,20 @@
         }
 
         function showFoodModal(food) {
+            const isFav = favoritesList.includes(food.id);
+
             const modal = `
                 <div class="modal fade" id="foodModal" tabindex="-1" aria-labelledby="foodModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
                                 <h5 class="modal-title" id="foodModalLabel">
-                                    <span style="font-size: 2rem; margin-right: 10px;">${food.emoji}</span>
+                                    ${
+                                        (food.imageUrl || food.image)
+                                        ? `<img src="${food.imageUrl || food.image}" alt="${food.name}"
+                                            style="height:100px;width:150px;object-fit:cover;border-radius:6px;margin-right:10px;">`
+                                        : `<span style="font-size:2rem; margin-right:10px;">${food.emoji || ""}</span>`
+                                    }
                                     ${food.name}
                                 </h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1018,15 +1923,10 @@
                                         <strong>Difficulty to Make:</strong> ${food.difficulty}</p>
                                         
                                         <h6>Where to Find</h6>
-                                        <p>Available at hawker centers, street stalls, and local restaurants throughout Malaysia. 
-                                        Best enjoyed fresh and hot from the stall!</p>
+                                        <p>${generateWhereToFind(food)}</p>
                                         
                                         <h6>Fun Facts</h6>
-                                        <ul>
-                                            <li>This dish represents the multicultural essence of Malaysian cuisine</li>
-                                            <li>Often prepared using traditional cooking methods passed down through generations</li>
-                                            <li>A must-try for anyone visiting Malaysia</li>
-                                        </ul>
+                                        ${generateFunFacts(food)}
                                     </div>
                                     <div class="col-md-4">
                                         <div class="bg-light p-3 rounded">
@@ -1050,8 +1950,8 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-custom" onclick="addToFavorites(${food.id})" data-bs-dismiss="modal">
-                                    <i class="fas fa-heart"></i> Add to Favorites
+                                <button type="button" class="btn btn-custom" data-food-id="${food.id}" onclick="addToFavorites(${food.id})">
+                                    <i class="${isFav ? 'fas text-danger' : 'far'} fa-heart"></i> Add to Favorites
                                 </button>
                             </div>
                         </div>
@@ -1059,19 +1959,8 @@
                 </div>
             `;
 
-            // Remove existing modal if any
-            $('#foodModal').remove();
-
-            // Add new modal to body
-            $('body').append(modal);
-
-            // Show modal
+            $('#modalContainer').html(modal);
             $('#foodModal').modal('show');
-
-            // Clean up when modal is hidden
-            $('#foodModal').on('hidden.bs.modal', function () {
-                $(this).remove();
-            });
         }
 
         function shareFood(foodId) {
@@ -1095,31 +1984,61 @@
             trackUserInteraction('share_food', { foodId: foodId, foodName: food.name });
         }
 
-        function addToFavorites(foodId) {
-            if (!favoritesList.includes(foodId)) {
-                favoritesList.push(foodId);
-                localStorage.setItem('streetFood_favorites', JSON.stringify(favoritesList));
+        function addToFavorites(id) {
+            const alreadyFav = favoritesList.includes(id);
+            if (!alreadyFav) {
+                favoritesList.push(id);
                 showNotification('Added to favorites!', 'success');
             } else {
                 showNotification('Already in favorites!', 'info');
             }
+
+            localStorage.setItem('streetFood_favorites', JSON.stringify(favoritesList));
+
+            // Update card heart icon
+            const cardBtnIcon = $(`.favorite-btn[data-food-id='${id}'] i`);
+            cardBtnIcon.removeClass('far').addClass('fas text-danger');
+
+            // Update modal heart icon
+            const modalBtnIcon = $(`#foodModal button[data-food-id='${id}'] i`);
+            if (modalBtnIcon.length) {
+                modalBtnIcon.removeClass('far').addClass('fas text-danger');
+            }
         }
 
-        function showNotification(message, type = 'info') {
-            const notification = $('#notification');
-            const notificationText = $('#notificationText');
+        let notifTimer = null;
 
-            notificationText.text(message);
-            notification.removeClass('bg-success bg-info bg-warning').addClass(type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-info');
-            notification.addClass('show');
+        function showNotification(message, type = "success") {
+            const notif = document.getElementById("notification");
+            const notifText = document.getElementById("notificationText");
 
-            setTimeout(() => {
-                notification.removeClass('show');
+            // Change color depending on type
+            if (type === "success") {
+                notif.style.background = "#28a745"; // green
+            } else if (type === "error") {
+                notif.style.background = "#dc3545"; // red
+            } else if (type === "info") {
+                notif.style.background = "#0d6efd"; // blue
+            } else {
+                notif.style.background = "#6c757d"; // gray
+            }
+
+            notifText.textContent = message;
+            notif.style.display = "block";
+
+            // Auto-hide after 3 seconds
+            if (notifTimer) clearTimeout(notifTimer);
+
+            notif.classList.add("show");
+
+            notifTimer = setTimeout(() => {
+                notif.classList.remove("show");
+                notifTimer = null;
             }, 3000);
         }
 
         function hideNotification() {
-            $('#notification').removeClass('show');
+            document.getElementById("notification").style.display = "none";
         }
 
         function trackUserInteraction(action, details = {}) {
@@ -1197,14 +2116,29 @@
         }
 
         function performSearch(searchTerm) {
-            const results = malaysianFoods.filter(food =>
-                food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                food.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                food.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+            const lowerCaseTerm = searchTerm.toLowerCase();
+
+            // First, determine the list of foods to search from, respecting the current category filter.
+            let baseFoods;
+            if (currentFilter === 'all') {
+                baseFoods = malaysianFoods;
+            } else {
+                // If a category like "Noodles" is active, only search within that category.
+                const activeCategory = normalizeCategory(currentFilter);
+                baseFoods = malaysianFoods.filter(food => normalizeCategory(food.category) === activeCategory);
+            }
+
+            // Now, filter that list with a more complete search logic that includes the 'origin'.
+            const results = baseFoods.filter(food =>
+                food.name.toLowerCase().includes(lowerCaseTerm) ||
+                food.description.toLowerCase().includes(lowerCaseTerm) ||
+                food.origin.toLowerCase().includes(lowerCaseTerm) || // <-- Now searches the origin
+                food.tags.some(tag => tag.toLowerCase().includes(lowerCaseTerm))
             );
 
             displayFoods(results);
 
+            // Update the search results text
             if (results.length > 0) {
                 $('#searchResultText').text(`Found ${results.length} results for "${searchTerm}"`);
                 $('#searchResults').show();
@@ -1269,6 +2203,115 @@
             trackUserInteraction('export_favorites', { count: favoriteFoods.length });
         }
 
+function generateWhereToFind(food) {
+            let text = `This popular dish is widely available at hawker centers, street-side stalls (gerai), and local restaurants throughout Malaysia. `;
+            
+            // Add a special note if the food has a specific origin state
+            const specificOrigins = ["malaysia", "malaysia/singapore", "malaysia/indonesia"];
+            if (food.origin && !specificOrigins.includes(food.origin.toLowerCase())) {
+                text += `For the most authentic taste, it's highly recommended to try it in its region of origin, ${food.origin}. `;
+            }
+
+            // Add a hint based on its tags
+            if (food.tags.includes('Breakfast')) {
+                text += `It's a particularly popular choice to start the day.`;
+            } else if (food.tags.includes('Street Food') || food.tags.includes('Snack')) {
+                text += `You'll often find the best versions at bustling night markets (pasar malam).`;
+            } else if (food.tags.includes('Festive')) {
+                text += `Look for it especially during festive seasons and celebrations.`;
+            }
+            return text;
+        }
+
+        function generateFunFacts(food) {
+            const facts = [];
+
+            // Fact 1: Origin-specific fact
+            if (food.origin && !["malaysia", "malaysia/singapore", "malaysia/indonesia"].includes(food.origin.toLowerCase())) {
+                facts.push(`While enjoyed nationwide, locals in ${food.origin} take special pride in their unique version of ${food.name}.`);
+            }
+            
+            // Fact 2: National dish fact
+            if (food.tags.includes('National Dish')) {
+                facts.push(`${food.name} is more than just a meal; it's widely considered Malaysia's national dish, beloved by all communities.`);
+            }
+
+            // Fact 3: Flavor profile from tags
+            const flavorTags = food.tags.filter(tag => ['Spicy', 'Sweet', 'Coconut', 'Herbal', 'Sour', 'Tangy', 'Rich'].includes(tag));
+            if (flavorTags.length > 1) {
+                facts.push(`The dish is celebrated for its complex flavor profile, masterfully balancing ${flavorTags[0].toLowerCase()} and ${flavorTags[1].toLowerCase()} notes.`);
+            } else if (flavorTags.length > 0) {
+                 facts.push(`A key characteristic of this dish is its distinct ${flavorTags[0].toLowerCase()} flavor, which comes from traditional herbs and spices.`);
+            }
+
+            // Fact 4: Special preparation or category
+            if (food.category.toLowerCase() === 'dessert') {
+                 facts.push(`Like many traditional Malaysian desserts (kuih-muih), it often uses coconut milk and palm sugar (gula melaka) for a rich, local flavor.`);
+            } else if (food.tags.includes('Grilled')) {
+                facts.push(`The smoky aroma for stir-fried dishes, is a crucial element that locals look for in a well-made version of this dish.`);
+            }
+            
+            // Add fallback facts if we don't have enough yet
+            if (facts.length < 2) {
+                facts.push(`The recipe for ${food.name} often varies from state to state, with each region adding its own local twist.`);
+                facts.push(`This dish is a perfect example of Malaysia's multicultural culinary heritage, blending different influences into a unique taste.`);
+            }
+
+            // Return a formatted list of the first 3 facts
+            return `<ul>${facts.slice(0, 3).map(fact => `<li>${fact}</li>`).join('')}</ul>`;
+        }
+
+
+        (function () {
+            const $input = $('#searchInput');
+            const $clear = $('#clearSearchBtn');
+
+            // Debounce helper to avoid spamming searches while typing
+            function debounce(fn, wait) {
+                let t;
+                return function(...args) {
+                clearTimeout(t);
+                t = setTimeout(() => fn.apply(this, args), wait);
+                };
+        }
+
+        // Perform live search
+        const runSearch = debounce(function () {
+                const term = ($input.val() || '').trim();
+                if (term.length) {
+                performSearch(term); // already implemented in your file
+                } else {
+                // Empty → restore current filter view
+                filterFoods(currentFilter);
+                $('#searchResults').hide();
+                }
+                // Track interaction
+                trackUserInteraction('search_live', { term });
+        }, 250);
+
+        // Input listeners
+        $input.on('input', runSearch);
+
+            // Clear button
+            $clear.on('click', function () {
+                $input.val('');
+                filterFoods(currentFilter);
+                $('#searchResults').hide();
+                trackUserInteraction('search_cleared', {});
+                $input.trigger('blur'); // optional
+        });
+
+        // Keyboard shortcut: Ctrl/Cmd+K focuses search
+        document.addEventListener('keydown', function (e) {
+                const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+                if ((isMac && e.metaKey && e.key.toLowerCase() === 'k') ||
+                    (!isMac && e.ctrlKey && e.key.toLowerCase() === 'k')) {
+                e.preventDefault();
+                $input.focus().select();
+                }
+        });
+        })();
+
         // Keyboard shortcuts
         document.addEventListener('keydown', function (e) {
             // Alt + F for favorites
@@ -1283,6 +2326,10 @@
             const sessionData = JSON.parse(sessionStorage.getItem('streetFood_session') || '{}');
             sessionData.malaysiaPageEndTime = new Date().toISOString();
             sessionStorage.setItem('streetFood_session', JSON.stringify(sessionData));
+        });
+
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem('scrollPosition', window.scrollY);
         });
 
         // Add highlight style for searched items
@@ -1305,7 +2352,21 @@
         console.log(`📊 ${foodsData.length} Malaysian foods available`);
         console.log('❤️ Favorites system active');
         console.log('🔍 Filter and search functionality ready');
+
+         window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            if (urlParams.has("id")) {
+                const id = urlParams.get("id");
+
+                // Call your function
+                viewFoodDetails(id);
+            }
+        };
     </script>
 </body>
 
+
 </html>
+
+

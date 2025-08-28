@@ -7,32 +7,20 @@
     <title>Street Food Explorer - Food Details</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style>
-        :root {
-            --primary-color: #e74c3c;
-            --secondary-color: #f39c12;
-            --accent-color: #27ae60;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #fafafa;
-        }
-
-        .navbar {
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-        }
-
-        .navbar a {
-            color: white !important;
-            font-weight: 600;
-        }
 
         .hero {
-            padding: 80px 0;
+            padding: 20px 0;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             text-align: center;
+        }
+
+        .hero img {
+            margin-top: 80px;
+            width: 30%;
+            height: auto;
         }
 
         .hero h1 {
@@ -75,37 +63,136 @@
             transform: translateY(-5px);
         }
 
-        .footer {
-            background: #2c3e50;
-            color: white;
-            padding: 30px 0;
-            margin-top: 60px;
+        .view-related {
+            border-color: #ff6b35;
+            color: #ff8800;
         }
 
-        .footer a {
-            color: #f39c12;
+        .view-related:hover {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            
+        }
+
+        /* Footer - Same as index.html */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 50px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #bdc3c7;
             text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-links a:hover {
+            color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            padding-top: 20px;
+            text-align: center;
+            color: #bdc3c7;
+        }
+
+        /* Notification */
+        .notification {
+        display: none; /* hidden by default */
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 250px;
+        background: #28a745; /* default green (success) */
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        font-size: 16px;
+        z-index: 2000;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.5s, transform 0.5s;
+        }
+
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0)
         }
     </style>
 </head>
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="index.html">Street Food Explorer</a>
-            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-utensils"></i> Street Food Explorer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div id="navMenu" class="collapse navbar-collapse">
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                    <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                    <li class="nav-item"><a href="malaysia.html" class="nav-link">Malaysia</a></li>
-                    <li class="nav-item"><a href="global.html" class="nav-link">Global</a></li>
-                    <li class="nav-item"><a href="gallery.html" class="nav-link">Gallery</a></li>
-                    <li class="nav-item"><a href="map.html" class="nav-link">Map</a></li>
-                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="malaysia.html">Malaysian Food</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="global.html">Global Food</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="map.html">Food Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="gallery.html">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -113,22 +200,25 @@
 
     <!-- Hero -->
     <section class="hero">
-        <div class="container">
-            <h1 id="foodTitle">🍲 Food Name</h1>
-            <p class="lead" id="foodSubtitle">Explore the taste, origin, and story of this dish.</p>
+        <div class="container text-center">
+            <img id="foodImage" src="" alt="Food Name">
+            <h1 id="foodTitle"></h1>
+            <p class="lead" id="foodSubtitle"></p>
         </div>
     </section>
 
     <!-- Food Details -->
-    <section class="food-details">
+    <section class="food-details" id="details">
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-8">
                     <div class="food-card">
                         <h3>Description</h3>
                         <p id="foodDescription"></p>
-                        <h4>Origin & Taste</h4>
+                        <h4>Origin & Diffculty</h4>
+                        <p><strong>Country:</strong> <span id="foodCountry"></span></p>
                         <p><strong>Origin:</strong> <span id="foodOrigin"></span></p>
+                        <p><strong>Difficulty to Make:</strong> <span id="foodDifficulty"></span></p>
                         <p><strong>Taste:</strong> <span id="foodTaste"></span></p>
                         <h4>Ingredients</h4>
                         <ul id="foodIngredients"></ul>
@@ -141,10 +231,10 @@
                         <h5>Quick Info</h5>
                         <p><strong>Price:</strong> <span id="foodPrice"></span></p>
                         <p><strong>Rating:</strong> <span id="foodRating"></span></p>
-                        <button class="btn btn-success w-100 mb-2" id="addToFavBtn"><i class="fas fa-heart"></i> Add to
-                            Favorites</button>
-                        <button class="btn btn-primary w-100 mb-2" id="shareBtn"><i class="fas fa-share"></i> Share This
-                            Dish</button>
+                        <button class="btn btn-success w-100 mb-2" id="addToFavBtn"><i class="fas fa-heart" id="favIcon"></i> 
+                            Add to Favorites</button>
+                        <button class="btn btn-primary w-100 mb-2" id="shareBtn"><i class="fas fa-share"></i>
+                            Share This Dish</button>
                     </div>
                 </div>
             </div>
@@ -156,12 +246,56 @@
             </div>
         </div>
     </section>
-
     <!-- Footer -->
-    <footer class="footer text-center">
-        <p>&copy; 2025 Street Food Explorer | All Rights Reserved</p>
-        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-utensils"></i> Street Food Explorer</h4>
+                    <p>Your ultimate guide to discovering the world's most amazing street foods. From local Malaysian
+                        favorites to global culinary treasures.</p>
+                    <div class="social-links mt-3">
+                        <a href="https://web.facebook.com/StreetFoodExplorer9672/" title="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="https://x.com/Street_Food9672" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/street_food_explorer9672/" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="malaysia.html">Malaysian Street Food</a></li>
+                        <li><a href="global.html">Global Street Food</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="gallery.html">Photo Gallery</a></li>
+                        <li><a href="map.html">Food Map</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="#" onclick="showPrivacyPolicy()">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fas fa-envelope"></i> info@streetfoodexplorer.com</p>
+                    <p><i class="fas fa-phone"></i> +60 16-510-9672</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Kuala Lumpur, Malaysia</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Street Food Explorer. All rights reserved. | Developed by UCCD2323 Group Project</p>
+            </div>
+        </div>
     </footer>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+        <button type="button" class="btn-close btn-close-white ms-2" onclick="hideNotification()"></button>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -170,16 +304,19 @@
 
         $(document).ready(function () {
             if (food && food.name) {
-                $('#foodTitle').text(food.emoji + " " + food.name);
+                $('#foodImage').attr('src', food.image || '').attr('alt', food.name);
+                $('#foodTitle').text(food.name);
                 $('#foodSubtitle').text("A beloved " + food.origin + " dish loved by many.");
                 $('#foodDescription').text(food.description);
+                $('#foodCountry').text(food.country);
                 $('#foodOrigin').text(food.origin);
-                $('#foodTaste').text(food.taste || "Savory and delicious");
-                $('#foodPrice').text(food.price || "Varies");
+                $('#foodDifficulty').text(food.difficulty);
+                $('#foodTaste').text(food.taste || "Not Found");
+                $('#foodPrice').text(food.price || "Not Found");
                 $('#foodRating').text(food.rating + " / 5");
 
                 // Ingredients (mock if not provided)
-                const ingredients = food.ingredients || ["Rice noodles", "Soy sauce", "Egg", "Vegetables"];
+                const ingredients = food.ingredients || ["Not Found"];
                 ingredients.forEach(i => $('#foodIngredients').append(`<li>${i}</li>`));
 
                 // Tags
@@ -187,35 +324,52 @@
                     food.tags.forEach(t => $('#foodTags').append(`<span>${t}</span>`));
                 }
 
-                // Related dishes (mock for now)
-                const related = [
-                    { name: "Satay", emoji: "🍢" },
-                    { name: "Laksa", emoji: "🍜" },
-                    { name: "Nasi Lemak", emoji: "🍛" }
-                ];
+                const allFoods = JSON.parse(localStorage.getItem("foodsData") || "[]");
+                const related = allFoods
+                    .filter(f => f.id !== food.id)
+                    .filter(f => f.category === food.category || f.country === food.country)
+                    .slice(0, 6);
+
                 related.forEach(r => {
                     $('#relatedDishes').append(`
-            <div class="col-md-4">
-              <div class="card p-3">
-                <h5>${r.emoji} ${r.name}</h5>
-                <a href="details.html" class="btn btn-sm btn-outline-primary mt-2">View</a>
-              </div>
-            </div>
-          `);
+                        <div class="col-md-4" style="margin-bottom:20px;">
+                            <div class="card p-3">
+                                <h5>
+                                    <img src="${r.image}" alt="${r.name}" style="width:auto; height:80px; margin-right:5px; border-radius:8px; vertical-align:middle;">
+                                    ${r.name}
+                                </h5>
+                                <a href="details.html" class="btn btn-sm btn-outline-primary mt-2 view-related" data-food-id="${r.id}">View</a>
+                            </div>
+                        </div>
+                    `);
                 });
+
+                // View related dishses
+                $(document).on('click', '.view-related', function(e) {
+                    e.preventDefault();
+                    const id = $(this).data('food-id');
+                    const selected = allFoods.find(f => f.id === id);
+                    if (selected) {
+                        sessionStorage.setItem('selectedFood', JSON.stringify(selected));
+                        location.reload();
+                    }
+                });
+
+                
             }
 
             // Favorites
             $('#addToFavBtn').on('click', function () {
-                let favs = JSON.parse(localStorage.getItem('streetFood_favorites') || '[]');
+                let favs = JSON.parse(localStorage.getItem('streetFood_favorites_global') || '[]');
                 if (!favs.includes(food.id)) {
                     favs.push(food.id);
-                    localStorage.setItem('streetFood_favorites', JSON.stringify(favs));
-                    alert("Added to favorites!");
+                    localStorage.setItem('streetFood_favorites_global', JSON.stringify(favs));
+                    showNotification("Added to favorites!", "success");
+                    $('#favIcon').removeClass('far').addClass('fas text-danger');
                 } else {
-                    alert("Already in favorites!");
+                    showNotification("Already in favorites!", "info");
                 }
-            });
+            });  
 
             // Sharing
             $('#shareBtn').on('click', function () {
@@ -227,10 +381,49 @@
                     });
                 } else {
                     navigator.clipboard.writeText(`${food.name} - ${food.description}`);
-                    alert("Link copied to clipboard!");
+                    showNotification("Link copied to clipboard!", "success");
                 }
             });
+
+            // Notification
+            let notifTimer = null;
+
+            function showNotification(message, type = "success") {
+                const notif = document.getElementById("notification");
+                const notifText = document.getElementById("notificationText");
+
+                // Change background color depending on type
+                if (type === "success") {
+                    notif.style.background = "#28a745"; // green
+                } else if (type === "error") {
+                    notif.style.background = "#dc3545"; // red
+                } else if (type === "info") {
+                    notif.style.background = "#0d6efd"; // blue
+                } else {
+                    notif.style.background = "#6c757d"; // gray
+                }
+
+                notifText.textContent = message;
+                notif.style.display = "block";
+
+                // Auto-hide after 3 seconds
+                if (notifTimer) clearTimeout(notifTimer);
+
+                notif.classList.add("show");
+
+                notifTimer = setTimeout(() => {
+                    notif.classList.remove("show");
+                    notifTimer = null;
+                }, 3000);
+            }
+
+
         });
+
+            function hideNotification() {
+            document.getElementById("notification").style.display = "none";
+            }
+            
     </script>
 </body>
 
